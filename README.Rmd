@@ -1,4 +1,4 @@
 #Background
-Plants have a variety of predators, including ants and rodents. In order to better understand the possible additive or synergistic interactions of these predator groups, we used the data collected by Ernest et al. (2009) to analyze how the exclusion of ant colonies, rodents, or both influenced plant species diversity on plots in the Chichuahuan desert. 
+Plants have a variety of predators, including ants and rodents. In order to better understand the independent effects, as well as potential additive or synergistic interactions, of these predator groups, we used the data collected by Ernest et al. (2009) to analyze how the exclusion of ant colonies, rodents, or both influenced plant species diversity on plots in the Chihuahua desert from 1983-2002. 
 
 <!-- This is a readme for this project -->
