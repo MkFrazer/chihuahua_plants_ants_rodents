@@ -1,0 +1,24 @@
+---
+title: "Manuscript_draft"
+author: "Madeline Frazer"
+bibliography: Reproducibility.bib
+csl: chicago-fullnote-bibliography.csl 
+
+output: pdf_document
+---
+
+#Ants, Plants, and Rats: Effects of Predator Exclusion on Chihuahua Plant Species Diversity
+
+##Introduction
+
+This paper uses the data by [@ernest2009].
+
+##Materials and Methods
+
+##Results
+
+##Discussion
+
+##Conclusion
+
+##Bibliography
