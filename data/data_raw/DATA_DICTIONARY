@@ -1,0 +1,59 @@
+This Data Dictionary explains the file formatting for the RAW DATA for the project, 
+"Plant Species Diversity as a function of ant and rodent predation in the Chihuahua desert."
+
+ANTS
+
+Species Code	Scientific Name
+
+COIN		Conomyrma insana
+
+COBI		Conomyrma bicolor
+
+CREM		Crematogastor sp.
+
+IRPR		Iridomyrma pruinosum
+
+MYMI		Myrmecocystus mimicus
+
+MYDE		Myrmecocystus depilis
+
+MYME		Myrmecocystus mexicanus
+
+MYNA		Myrmecocystus navajo
+
+NOCO		Novomessor cockerelli
+
+PHXE		Pheidole xerophila
+
+PHSI		Pheidole sitarches
+
+PHDE		Pheidole desertorum
+
+PHMI		Pheidole militicida
+
+PHYE		Pheidole “yellow”
+
+POBA		Pogonomyrmex barbatus
+
+PODE		Pogonomyrmex desertorum
+
+POMA		Pogonomyrmex maricopa.
+
+POIM		Pogonomyrmex imbebiculus
+
+POPI		Pogonomyrmex pima
+
+PORU		Pogonomyrmex rugosus
+
+SOLA		Solenopsis sp. A
+
+SOLB		Solenopsis xyloni
+
+UNKSP		Unknown species
+
+
+
+PLANTS
+
+
+RODENTS

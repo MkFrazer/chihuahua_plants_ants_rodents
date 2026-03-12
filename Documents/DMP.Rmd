@@ -1,0 +1,63 @@
+---
+title: "Data Management Plan"
+author: "Madeline Frazer" 
+output: 
+  pdf_document: default 
+---
+This page was last updated on `r format(Sys.time(), '%B %d, %Y')`.
+
+* * *
+
+# Data Managenent Plan
+
+## Data Collection
+What types of data will you collect, create, link to, acquire and/or record?
+### Data Type & File Formats
+What file formats will your data be collected in? Will these formats allow for data re-use, sharing and long-term access to the data?
+### Data Organization
+What conventions and procedures will you use to structure, name and version-control your files to help you and others better understand how your data are organized?
+
+## Metadata and Documentation 
+### FAIR
+What documentation will be needed for the data to be read and interpreted correctly in the future?
+### Metadata
+If you are using a metadata standard and/or tools to document and describe your data, please list here.
+### Organization
+How will you make sure that documentation is created or captured consistently throughout your project?
+
+## Storage and Backup
+### Storage Space
+What are the anticipated storage requirements for your project, in terms of storage space (in megabytes, gigabytes, terabytes, etc.) and the length of time you will be storing it?
+### Backups and Updates
+How and where will your data be stored and backed up during your research project?
+### Team Access Management
+How will the research team and other collaborators access, modify, and contribute data throughout the project?
+
+## Data Preservation 
+### Preservation
+Where will you deposit your data for long-term preservation and access at the end of your research project?
+### File format
+Indicate how you will ensure your data is preservation ready. Consider preservation-friendly file formats, ensuring file integrity, anonymization and de-identification, inclusion of supporting documentation.
+
+## Sharing and Resuse
+### Data Sharing
+What data will you be sharing and in what form? (e.g. raw, processed, analyzed, final)
+### License
+Have you considered what type of end-user license to include with your data?
+### Dissemination
+What steps will be taken to help the research community know that your data exists?
+
+## Responsibilities and Resources
+### Responsibility of Contributors
+Identify who will be responsible for managing this project's data during and after the project and the major data management tasks for which they will be responsible.
+### Unforseen changes
+How will responsibilities for managing data activities be handled if substantive changes happen in the personnel overseeing the project's data, including a change of Principal Investigator?
+### Resources
+What resources will you require to implement your data management plan? What do you estimate the overall cost for data management to be?
+
+## Ethics and Legal Compliance
+### Sensitive data
+If your research project includes sensitive data, how will you ensure that it is securely managed and accessible only to approved members of the project?
+If applicable, what strategies will you undertake to address secondary uses of sensitive data?
+### Issues
+How will you manage legal, ethical, and intellectual property issues?
