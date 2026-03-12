@@ -7,18 +7,30 @@ csl: chicago-fullnote-bibliography.csl
 output: pdf_document
 ---
 
-#Ants, Plants, and Rats: Effects of Predator Exclusion on Chihuahua Plant Species Diversity
+# Ants, Plants, and Rats: Effects of Predator Exclusion on Chihuahua Plant Species Abundance
 
-##Introduction
+## Introduction
 
-This paper uses the data by [@ernest2009].
+Plant species abundance is a result of many abiotic and biotic factors, including predation. Two main plant predators of Chihuahua plants include ants and rodents. 
 
-##Materials and Methods
+We aimed to use existing, publicly available data by [@ernest2009] to understand how each predator population (ants and rodents) influence plant species diversity. This data set collected longitudinal data plant abundance data, ant colony data, rodent data, and precipitation data from 1977-2002 across 24 experimental exclusion plots.
 
-##Results
+## Materials and Methods
+The data for this project is publicly available.
+We ran a linear mixed effects model in order to understand the interactive impact of predators on plant species abundance, using ant colony presence/absence and rodent presence/absence as fixed effects, and precipitation as a random effect.
 
-##Discussion
+## Results
 
-##Conclusion
+Here is a table of which plots had which treatment(s).
+```{R  fig.height = 8, fig.width = 8}
+library(knitr)
+plots_treatments <- read.csv()
+``` 
 
-##Bibliography
+Here is a figure of the linear mixed effects model and how it predicts the data. 
+
+## Discussion
+
+## Conclusion
+
+## Bibliography
