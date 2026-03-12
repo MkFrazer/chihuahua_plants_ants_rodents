@@ -29,7 +29,26 @@ kable(plots_treatments, align = "cccc", caption = "Plot Treatments")
 ``` 
 
 Here is a figure of the linear mixed effects model and how it predicts the data. 
+```{R  echo = FALSE}
+#this is code to make the mixed effect models when I get there
+library(palmerpenguins)
+library(lme4)
+penguins<- penguins
+model1 <- lmer(flipper_length_mm ~ body_mass_g + sex + species + (1|year), data = penguins)
+model2 <- lmer(flipper_length_mm ~ sex + species + (1|year), data = penguins)
+model3 <- lmer(flipper_length_mm ~ species + (1|year), data = penguins)
 
+``` 
+```{R  echo = FALSE}
+#this is code to compare the models when I get there
+AIC(model1, model2, model3)
+``` 
+
+```{R  fig.height = 8, fig.width = 8}
+#this is code to make the figure
+plot(model1, which = 3)
+``` 
+The residuals clearly have heteroskodasticity. 
 
 ## Discussion
 
