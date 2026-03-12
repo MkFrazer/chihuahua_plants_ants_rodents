@@ -17,17 +17,19 @@ We aimed to use existing, publicly available data by [@ernest2009] to understand
 
 ## Materials and Methods
 The data for this project is publicly available.
-We ran a linear mixed effects model in order to understand the interactive impact of predators on plant species abundance, using ant colony presence/absence and rodent presence/absence as fixed effects, and precipitation as a random effect.
+<!-- We ran a linear mixed effects model in order to understand the interactive impact of predators on plant species abundance, using ant colony presence/absence and rodent presence/absence as fixed effects, and precipitation as a random effect. -->
 
 ## Results
 
 Here is a table of which plots had which treatment(s).
 ```{R  fig.height = 8, fig.width = 8}
 library(knitr)
-plots_treatments <- read.csv()
+plots_treatments <- read.csv("./../data/data_raw/raw_data/plot_treatments.csv")
+kable(plots_treatments, align = "cccc", caption = "Plot Treatments")
 ``` 
 
 Here is a figure of the linear mixed effects model and how it predicts the data. 
+
 
 ## Discussion
 
