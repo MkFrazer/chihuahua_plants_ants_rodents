@@ -11,24 +11,28 @@ output: pdf_document
 
 ## Introduction
 
-Plant species abundance is a result of many abiotic and biotic factors, including predation. Two main plant predators of Chihuahua plants include ants and rodents. 
+Plant species abundance is a result of many abiotic and biotic factors, including predation. Two main plant predators of Chihuahua plants include ants and rodents.
 
 We aimed to use existing, publicly available data by [@ernest2009] to understand how each predator population (ants and rodents) influence plant species diversity. This data set collected longitudinal data plant abundance data, ant colony data, rodent data, and precipitation data from 1977-2002 across 24 experimental exclusion plots.
 
 ## Materials and Methods
-The data for this project is publicly available.
-<!-- We ran a linear mixed effects model in order to understand the interactive impact of predators on plant species abundance, using ant colony presence/absence and rodent presence/absence as fixed effects, and precipitation as a random effect. -->
+
+The data for this project is publicly available. <!-- We ran a linear mixed effects model in order to understand the interactive impact of predators on plant species abundance, using ant colony presence/absence and rodent presence/absence as fixed effects, and precipitation as a random effect. -->
 
 ## Results
 
 Here is a table of which plots had which treatment(s).
+
+Changes in treatment assignments to the 24 experimental plots through time. To help highlight which plots were modified, only changes in treatment after 1985 are recorded below. Blank cells denote no changes in treatment from the previous time period. Pogonomyrmex rugosus was a dominant granivorous ant species that declined at the site. Banner-tailed kangaroo rats (Dipodomys spectabilis) were a dominant rodent granivore that also declined during the 1980s. (Table modified from Brown 1998). * plot 24 was not initiated until 1979 (Samson et al. 1992)
+
 ```{R  fig.height = 8, fig.width = 8}
 library(knitr)
 plots_treatments <- read.csv("./../data/data_raw/raw_data/plot_treatments.csv")
 kable(plots_treatments, align = "cccc", caption = "Plot Treatments")
-``` 
+```
 
-Here is a figure of the linear mixed effects model and how it predicts the data. 
+Here is a figure of the linear mixed effects model and how it predicts the data.
+
 ```{R  echo = FALSE}
 #this is code to make the mixed effect models when I get there
 library(palmerpenguins)
@@ -38,17 +42,19 @@ model1 <- lmer(flipper_length_mm ~ body_mass_g + sex + species + (1|year), data 
 model2 <- lmer(flipper_length_mm ~ sex + species + (1|year), data = penguins)
 model3 <- lmer(flipper_length_mm ~ species + (1|year), data = penguins)
 
-``` 
+```
+
 ```{R  echo = FALSE}
 #this is code to compare the models when I get there
 AIC(model1, model2, model3)
-``` 
+```
 
-```{R  fig.height = 8, fig.width = 8}
+```{R  fig.height = 8, fig.width = 8, echo = FALSE}
 #this is code to make the figure
 plot(model1, which = 3)
-``` 
-The residuals clearly have heteroskodasticity. 
+```
+
+The residuals clearly have heteroskodasticity.
 
 ## Discussion
 
