@@ -1,0 +1,26 @@
+---
+title: "Reproducibility_appendix"
+author: "Madeline Frazer"
+bibliography: Reproducibility.bib
+csl: chicago-fullnote-bibliography.csl 
+output: pdf_document
+---
+
+This page was last updated on `r format(Sys.time(), '%B %d, %Y')`.
+
+------------------------------------------------------------------------
+# Background
+This document outlines the steps of all analyses included in my project, "Plant abundance as a function of predator exclusion in the Chihuahua desert," including all data processing, model fitting, and figure generation.
+
+The data is longitudinal ecological data (1977-2002) by [@ernest2009]. It is publicly accessible, accessed [here](https://www.esapubs.org/archive/ecol/E090/118/metadata.htm).
+
+These data are comprised of plant species abundance data, rodent species abundance and physiological data, and ant colony abundance data.
+These data were collected on 24 plots in the Chihuahuan desert near Portal, Arizona, USA, along with precipitation data. 
+
+# Data Inport
+Download CSV files from above site (plant, rodent, ant, and precipitation data). These data are comprised of plant species abundance data, rodent species abundance and physiological data, and ant colony abundance data.
+These data were collected on 24 plots in the Chihuahuan desert near Portal, Arizona, USA, along with precipitation data. 
+
+# Data Cleaning
+While the longitudinal study went from 1977-2002, we only used data from 1983–2002 because that is when plant species-level abundances were recorded. All other abundance data (individual-level data on rodents, species-level abundance of ant colonies, and precipitation) overlap with this time period.
+
