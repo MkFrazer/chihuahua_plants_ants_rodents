@@ -26,7 +26,5 @@ ants_clean <- full_join(ants_1, ants_2.1)
 #limit to years 1983-2002
 ants_clean <- filter(ants_clean, YEAR >= 1983)
 
-#export to .csv
-output_path <- here("data", "data_processed")
-write.csv(ants_clean, output_path, row.names = FALSE)
+write.csv(ants_clean, file = "data/data_processed/ants_clean.csv")
 
