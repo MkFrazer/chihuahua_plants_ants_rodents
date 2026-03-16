@@ -31,11 +31,5 @@ ants_clean <- full_join(ants_1, ants_2.1)
 #limit to years 1983-2002
 ants_clean <- filter(ants_clean, YEAR >= 1983)
 
-<<<<<<< HEAD
-write.csv(ants_clean, file = "data/data_processed/ants_clean.csv")
-=======
 #export to .csv
-output_path <- here("Mini-Project", "data", "data_processed")
-write.csv(ants_clean, output_path, row.names = FALSE)
->>>>>>> f313600d2af9339e3a12ad073df326f073a790b5
-
+write.csv(ants_clean, file = "data/data_processed/ants_clean.csv")
