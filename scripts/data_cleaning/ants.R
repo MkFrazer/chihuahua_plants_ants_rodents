@@ -5,8 +5,13 @@ library(here)
 
 
 #read in files to combine
+<<<<<<< HEAD
 ants_1 <- read.csv(here("data", "data_raw", "Ants_raw", "Portal_ant_colony_19771987.csv"))
 ants_2 <- read.csv(here("data", "data_raw", "Ants_raw", "Portal_ant_colony_19882002.csv"))
+=======
+ants_1 <- read.csv(here("Mini-Project", "data", "data_raw", "Ants_raw", "Portal_ant_colony_19771987.csv"))
+ants_2 <- read.csv(here("Mini-Project", "data", "data_raw", "Ants_raw", "Portal_ant_colony_19882002.csv"))
+>>>>>>> f313600d2af9339e3a12ad073df326f073a790b5
 
 #find column names that were new from 1988-2002 to exclude
 colnames(ants_1)
@@ -26,5 +31,11 @@ ants_clean <- full_join(ants_1, ants_2.1)
 #limit to years 1983-2002
 ants_clean <- filter(ants_clean, YEAR >= 1983)
 
+<<<<<<< HEAD
 write.csv(ants_clean, file = "data/data_processed/ants_clean.csv")
+=======
+#export to .csv
+output_path <- here("Mini-Project", "data", "data_processed")
+write.csv(ants_clean, output_path, row.names = FALSE)
+>>>>>>> f313600d2af9339e3a12ad073df326f073a790b5
 
