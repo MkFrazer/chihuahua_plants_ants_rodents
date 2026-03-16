@@ -5,13 +5,8 @@ library(here)
 
 
 #read in files to combine
-<<<<<<< HEAD
 ants_1 <- read.csv(here("data", "data_raw", "Ants_raw", "Portal_ant_colony_19771987.csv"))
 ants_2 <- read.csv(here("data", "data_raw", "Ants_raw", "Portal_ant_colony_19882002.csv"))
-=======
-ants_1 <- read.csv(here("Mini-Project", "data", "data_raw", "Ants_raw", "Portal_ant_colony_19771987.csv"))
-ants_2 <- read.csv(here("Mini-Project", "data", "data_raw", "Ants_raw", "Portal_ant_colony_19882002.csv"))
->>>>>>> f313600d2af9339e3a12ad073df326f073a790b5
 
 #find column names that were new from 1988-2002 to exclude
 colnames(ants_1)
