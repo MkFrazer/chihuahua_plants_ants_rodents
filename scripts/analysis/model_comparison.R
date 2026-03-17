@@ -1,0 +1,1 @@
+#this script is for model comparison using AICc to determine which factors best predict plant abundance

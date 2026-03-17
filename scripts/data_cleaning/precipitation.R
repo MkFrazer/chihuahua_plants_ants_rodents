@@ -20,23 +20,27 @@ precip_1 <- rename(precip_1, Precipitation = precipitation)
 
 #create average column to represent the average precipitation per year
 precip_1 <- precip_1 %>% group_by(Year) %>% 
-            mutate(Annual_avg_precip = mean(Precipitation, na.remove = TRUE)) %>% 
+            mutate(Annual_precip = sum(Precipitation, na.remove = TRUE)) %>% 
             ungroup()
 
 precip_2 <- precip_2 %>% group_by(Year) %>% 
-  mutate(Annual_avg_precip = mean(Precipitation, na.remove = TRUE)) %>% 
+  mutate(Annual_precip = sum(Precipitation, na.remove = TRUE)) %>% 
   ungroup()
 
 #select Year and Annual_Average columns
-precip_1 <- precip_1 %>% select(Year, Annual_avg_precip)
-precip_2 <- precip_2 %>% select(Year, Annual_avg_precip)
+precip_1 <- precip_1 %>% select(Year, Annual_precip)
+precip_2 <- precip_2 %>% select(Year, Annual_precip)
 
 #combine both data sets into one data frame
 precip_clean <- full_join(precip_1, precip_2)
 precip_clean <- precip_clean %>% distinct()
 
-#limit to years 1983-2002
+#limit to years 1989-2002
 precip_clean <- filter(precip_clean, Year >= 1989)
+
+#because 1989 was split between both data frames, combine the 1989 column
+precip_clean <- precip_clean %>% group_by(Year) %>% 
+  summarize(Annual_precip = sum(Annual_precip), .groups = "drop")
 
 #export to .csv
 write.csv(precip_clean, file = "data/data_processed/precip_clean.csv", row.names = FALSE)

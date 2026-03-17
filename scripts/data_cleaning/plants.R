@@ -101,4 +101,4 @@ plants <- plants %>% mutate(avg_abundance = total_abundance/total_species)
 plants_clean <- filter(plants, Year >= 1989)
 
 #export to .csv
-write.csv(plants_clean, file = "data/data_processed/plants_clean.csv")
+write.csv(plants_clean, file = "data/data_processed/plants_clean.csv", row.names = FALSE)
