@@ -18,9 +18,11 @@ These data are comprised of plant species abundance data, rodent species abundan
 These data were collected on 24 plots in the Chihuahuan desert near Portal, Arizona, USA, along with precipitation data. 
 
 # Data Inport
-Download CSV files from above site (plant, rodent, ant, and precipitation data). These data are comprised of plant species abundance data, rodent species abundance and physiological data, and ant colony abundance data.
-These data were collected on 24 plots in the Chihuahuan desert near Portal, Arizona, USA, along with precipitation data. 
+Download CSV files from above site (plant and precipitation data). These data are comprised of plant species abundance data and precipitation over varying time periods. 
+These data were collected on 24 plots in the Chihuahuan desert near Portal, Arizona, USA, along with precipitation data (one precipitation measurement for all plots). 
+
+For treatments, a qualitative table of the treatments each plot received on which years can be found in the metadata for this data set (https://www.esapubs.org/archive/ecol/E090/118/metadata.htm). This project includes a copy of that qualitative table in CSV form (plot_treatments). It also includes a quantitative version, where each unique combination of plot and year has corresponding binary values representing the inclusion or exclusion of kangaroo rats (large rodents), all rodents, Pogonomyrmex rugosus (a granivorous ant species), or all ants. 0 = excluded (not present), 1 = included (present). This table is what is used in the following analyses.
 
 # Data Cleaning
-While the longitudinal study went from 1977-2002, we only used data from 1983–2002 because that is when plant species-level abundances were recorded. All other abundance data (individual-level data on rodents, species-level abundance of ant colonies, and precipitation) overlap with this time period.
+While the longitudinal study went from 1977-2002, we only used data from 1989–2002 because that is when plant species-level abundances were consistently recorded.
 

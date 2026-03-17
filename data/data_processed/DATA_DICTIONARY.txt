@@ -1,66 +1,32 @@
 This Data Dictionary explains the file formatting for the CLEANED DATA for the project, 
 "Plant Species Diversity as a function of ant and rodent predation in the Chihuahua desert."
 
-ANTS
-
-Ants_clean contains filtered data from the Ants_raw directory. 
-The new .csv file contains a merged table of the following variables from years 1977-2002:
--YEAR: Year the data were collected, ranging from 1977-2002 (Integer)
--PLOT: Plot number where data were collected, 1-24 (Integer)
--[Species code]: Number of colonies or colony opening, 0 = no colonies or openings present, -99 = presence/absence not recorded (Integer)
-Although data for each stake was recorded starting in 1988, before 1988, only plot totals were recorded (totals for all 49 stakes) for each species. 
-	
-Species Code	Scientific Name
-
-COIN		Conomyrma insana
-
-COBI		Conomyrma bicolor
-
-CREM		Crematogastor sp.
-
-IRPR		Iridomyrma pruinosum
-
-MYMI		Myrmecocystus mimicus
-
-MYDE		Myrmecocystus depilis
-
-MYME		Myrmecocystus mexicanus
-
-MYNA		Myrmecocystus navajo
-
-NOCO		Novomessor cockerelli
-
-PHXE		Pheidole xerophila
-
-PHSI		Pheidole sitarches
-
-PHDE		Pheidole desertorum
-
-PHMI		Pheidole militicida
-
-PHYE		Pheidole “yellow”
-
-POBA		Pogonomyrmex barbatus
-
-PODE		Pogonomyrmex desertorum
-
-POMA		Pogonomyrmex maricopa.
-
-POIM		Pogonomyrmex imbebiculus
-
-POPI		Pogonomyrmex pima
-
-PORU		Pogonomyrmex rugosus
-
-SOLA		Solenopsis sp. A
-
-SOLB		Solenopsis xyloni
-
-UNKSP		Unknown species
-
-
-
-PLANTS
-
-
-RODENTS
+* plants_clean contains the following variables:
+    Year: year the plot was surveyed
+    Plot: plot number (1-24)
+    total_species: how many species were observed or had an observation count of 0
+    total_abundnace: the total number of plants on that plot
+    avg_abundance: the average number of plants per species per plot per year
+  
+* precip_clean contains the following variables:
+    Year: year the precipitation measurements were taken
+    Annual_avg_precip: the average amount of precipitation, calculated from monthly data
+    
+    Note: Precipitation for all plots came from one precipitation sensor
+    
+* treatments contains the following variables:
+    PLOT: plot number (1-24)
+    YEAR: year the plot was treated
+    LARGE_RODENTS: binary variable representing the exclusion or inclusion of kangaroo rats. 
+        0 = excluded (not present)
+        1 = not excluded (present)
+    ALL_RODENTS: binary variable representing the exclusion or inclusion of all rodents. 
+        0 = excluded (not present)
+        1 = not excluded (present)
+    PORU_ANTS: binary variable representing the exclusion or inclusion of Pogonomyrmex rugosus,
+      a dominant granivorous ant species. 
+        0 = excluded (not present)
+        1 = not excluded (present)
+    ALL_ANTS: binary variable representing the exclusion or inclusion of ant colonies of all species. 
+        0 = excluded (not present)
+        1 = not excluded (present)

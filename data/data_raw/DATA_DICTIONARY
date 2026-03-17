@@ -1,59 +1,105 @@
 This Data Dictionary explains the file formatting for the RAW DATA for the project, 
 "Plant Species Diversity as a function of ant and rodent predation in the Chihuahua desert."
 
-ANTS
+This study will only use data from 1989-2002, due to discrepencies in the plant data, as 
+described below.
+  
+  
+PLOT_TREATMENTS
+  Plot treatments varied over the years. 
+  
+* plot_treatments.csv contained the qualitative version of the treatment table found with the 
+  metadata on https://www.esapubs.org/archive/ecol/E090/118/metadata.htm. (see below for interpretation)
+  
+* treatments.csv contains a binary list for the presence (1) or absence (0) of each group, 
+  interpreted from the qualitative version:
+    LARGE_RODENTS = kangaroo rats
+    ALL_RODENTS = all rodents
+    PORU_ANTS = Pogonomyrmex rugosus, a dominant granivorous ant species
+    ALL_ANTS = all ant colonies
+  
+  The metadata explains how exclusions were performed:
+  
+  Overview:
+    "Experimental manipulations have been altered for some plots over the course of the 
+    study. Changes in treatment assignment occurred in 1985 and 1987. Changes in treatment 
+    were initiated when the manipulation did not cause significant changes in the rodent 
+    community (see Brown 1998 for details). Because responses were either non-existent or 
+    minor, plots that were plant manipulations or seed additions from 1977–1987 and were 
+    assigned as controls in 1987 are often treated as “long-term controls” for research 
+    focusing on the long-term dynamics at the site."
+    
+  Rodents:
+    "Rodent manipulations are effected through the use of gates in the fencing of each plot. 
+    Rodent removals contain no gates and any rodents captured on those plots are promptly 
+    removed. All other plots contain 16 gates (4 per plot side); gates consist of holes cut 
+    through the hardware cloth of the fencing. Gate size is manipulated to exclude subsets of 
+    the rodent community. Dimensions for gates on kangaroo rat removal plots are 1.9 cm × 1.9 
+    cm, D. spectabilis removals were 2.6 cm × 3.0 cm, and control plots are 3.7 cm × 5.7 cm. 
+    Species caught on plots from which they are supposed to be excluded are removed from the 
+    site and the access point to the plot is located and eliminated."
+    
+  Ants:
+    "Since 1977, ant manipulations have been conducted by applying a commercial poison 
+    (Mirex [Allied Chemical Corporation] through 1980 and AMDRO [American Cyanamide Company] 
+    afterwards) to designated plots (Davidson et al 1985). Removal of all ants was conducted 
+    by widespread application of the baited poison across the designated plot. Selected removal 
+    of Pogonomyrmex rugosus was conducted by application of the baited poison at conspicuous 
+    mounds of that species (Brown 1998)."
+    
+  Plant removal and seed additions:
+    Plant treatments: "Since 1988 there have been no direct manipulations of the plant community. 
+      Before 1988, annuals were “removed” by applying an herbicide (brand: Roundup), but this removal
+      was not considered successful and was discontinued (Brown 1998)."
+    Seed additions: "Since 1985 there have been no seed additions to any plot. Before 1985, seed 
+      additions were conducted by applying 96 kg milo (Sorghum vulgare) and/or millet (Panicum miliaceum) 
+      seeds to designated plots (Davidson et al 1985)."
+      
+PLANTS_RAW
+  Each CSV file contains winter or summer annual or perennial plant abundances measured from 
+  1983-2002. These files will be combined in the data_clean folder to calculate total abundance per plot 
+  per year.
+  Data Collection Period, Frequency: 
+    "Plant data were collected continuously from 1978–2002." A variety of documented issues (Samson et al. 
+    1992, Davidson et al. 1985, Quo et al. 2002) meant that 1978–1982 data were not published. 
+    Additionally, "Before 1988, it is possible that abundances were not necessarily recorded for all species 
+    present on a quadrat. Various assessments of the pre-1989 data have suggested that data may not have been 
+    collected on the rare species (Samson et al. 1992, Davidson et al. 1985, Quo et al. 2002), but when the 
+    transition to complete community sampling occurred is not clear. We are confident that complete community 
+    sampling was occurring by 1989." 
+    As such, this study only analyzes the years 1989-2002.
+  Data Collection:
+    "Because there are two annual plant communities – one in the winter and one in the summer - there are two 
+    plant surveys per year. The surveys occur towards the end of the growing season; occurring in spring for 
+    the winter community and fall for the summer community. Perennials occurring on quadrats were also recorded."
+  Research Methods:
+    Field: "Plants rooted within 16 fixed quadrats in each plot are counted each spring (winter annual survey) and 
+    fall (summer annual survey). Quadrat dimensions: 0.25 × 0.25 m. Quadrats are placed at locations permanently 
+    marked by a rebar stake." 
+  Values:
+    For each species abbreviation (see metadata website for species info),
+    0 = no individuals present; -99 = presence/absence not recorded.
 
-Species Code	Scientific Name
-
-COIN		Conomyrma insana
-
-COBI		Conomyrma bicolor
-
-CREM		Crematogastor sp.
-
-IRPR		Iridomyrma pruinosum
-
-MYMI		Myrmecocystus mimicus
-
-MYDE		Myrmecocystus depilis
-
-MYME		Myrmecocystus mexicanus
-
-MYNA		Myrmecocystus navajo
-
-NOCO		Novomessor cockerelli
-
-PHXE		Pheidole xerophila
-
-PHSI		Pheidole sitarches
-
-PHDE		Pheidole desertorum
-
-PHMI		Pheidole militicida
-
-PHYE		Pheidole “yellow”
-
-POBA		Pogonomyrmex barbatus
-
-PODE		Pogonomyrmex desertorum
-
-POMA		Pogonomyrmex maricopa.
-
-POIM		Pogonomyrmex imbebiculus
-
-POPI		Pogonomyrmex pima
-
-PORU		Pogonomyrmex rugosus
-
-SOLA		Solenopsis sp. A
-
-SOLB		Solenopsis xyloni
-
-UNKSP		Unknown species
-
-
-
-PLANTS
-
-
-RODENTS
+  Note: 
+   This study investigates the total plant species abundance per plot per year, so species-level
+   data is not relevant here. For more information about species-specific data, see the metadata 
+   associated with the plant abundance data (https://www.esapubs.org/archive/ecol/E090/118/Portal_plant_metadata.htm)
+  
+  
+PRECIP_RAW
+  These CSV files contain precipitation data from 1980-2002. "Because the spatial scale of the study 
+  site is relatively small relative to the scale at which precipitation events occur, there is only one
+  precipitation measurement for the site. The location of the precipitation gauge can be found on the 
+  map of the site ( metadata.htm; Fig 1). There are two precipitation data files (1980–1989 and 1989–2002). 
+  The separate files reflect changes in the time scale at which precipitation data was collected 
+  (approximately daily-to-weekly vs. hourly, respectively)." 
+  For this study, we used average monthly precipitation per year (see data_processed).
+  
+  Note:
+    "There are two rainy seasons at the site, occurring roughly from Oct–April and July–Sept. 
+    Typically 60% of the annual rainfall occurs in the summer (Brown and Ernest 2002). The two 
+    rainy seasons result in generally two distinct annual plant communities, with a few bi-seasonal 
+    annual species." For more information related to precipitation collection, see 
+    (https://www.esapubs.org/archive/ecol/E090/118/Portal_precipitation_metadata.htm). 
+    
+   
