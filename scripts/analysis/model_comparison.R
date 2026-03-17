@@ -46,5 +46,34 @@ plot(data$All_ants, data$total_abundance)
 
 
 #### model comparison
+library(glmmTMB)
 
-m1<- glm()
+m1<- glmmTMB(total_abundance ~ Large_rodents + All_rodents + PORU_ants + All_ants + (1|Annual_precip) + (1|Year), 
+         data = data,
+         family = poisson())
+summary(m1)
+
+m2<- glmmTMB(total_abundance ~ Large_rodents + All_rodents + (1|Annual_precip) + (1|Year),
+             data = data,
+             family = poisson())
+summary(m2)
+
+m3<- glmmTMB(total_abundance ~ All_rodents + All_ants + (1|Annual_precip) + (1|Year),
+             data = data,
+             family = poisson())
+summary(m3)
+
+m4 <- glmmTMB(total_abundance ~ All_rodents + PORU_ants + (1|Annual_precip) + (1|Year),
+              data = data,
+              family = poisson())
+summary(m4)
+
+m5 <- glmmTMB(total_abundance ~ Large_rodents + All_rodents + PORU_ants + (1|Annual_precip) + (1|Year),
+              data = data,
+              family = poisson())
+summary(m5)
+
+AIC(m1, m2, m3, m4, m5)
+
+plot(m5$fitted.values, m5$residuals)
+plot(m2)
