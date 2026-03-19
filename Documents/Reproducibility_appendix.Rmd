@@ -15,9 +15,9 @@ This document outlines the steps of all analyses included in my project, "Plant 
 The data is longitudinal ecological data (1977-2002) by [@ernest2009]. It is publicly accessible, accessed [here](https://www.esapubs.org/archive/ecol/E090/118/metadata.htm).
 
 These data are comprised of plant species abundance data, rodent species abundance and physiological data, and ant colony abundance data.
-These data were collected on 24 plots in the Chihuahuan desert near Portal, Arizona, USA, along with precipitation data. 
+These data were collected on 24 plots in the Chihuahua desert near Portal, Arizona, USA, along with precipitation data. 
 
-# Data Inport
+# Data Import
 Download CSV files from above site (plant and precipitation data). These data are comprised of plant species abundance data and precipitation over varying time periods. 
 These data were collected on 24 plots in the Chihuahuan desert near Portal, Arizona, USA, along with precipitation data (one precipitation measurement for all plots). 
 
@@ -26,3 +26,12 @@ For treatments, a qualitative table of the treatments each plot received on whic
 # Data Cleaning
 While the longitudinal study went from 1977-2002, we only used data from 1989–2002 because that is when plant species-level abundances were consistently recorded.
 
+## Plants
+
+
+## Precipitation
+1. Load packages (dplyr, here)
+2. Read in the two precipitation files (different time periods with different measurement frequencies).
+3. Change column names to be identical between both data frames. Exclude Day and Hour columns from precip2 (unique to precip2).
+4. Average precipitation over each year for each precip data frame into a new column. 
+5. 

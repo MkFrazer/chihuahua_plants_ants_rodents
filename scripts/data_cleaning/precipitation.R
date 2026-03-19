@@ -27,7 +27,7 @@ precip_2 <- precip_2 %>% group_by(Year) %>%
   mutate(Annual_precip = sum(Precipitation, na.remove = TRUE)) %>% 
   ungroup()
 
-#select Year and Annual_Average columns
+#select Year and Annual_precip columns
 precip_1 <- precip_1 %>% select(Year, Annual_precip)
 precip_2 <- precip_2 %>% select(Year, Annual_precip)
 

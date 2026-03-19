@@ -46,34 +46,79 @@ plot(data$All_ants, data$total_abundance)
 
 
 #### model comparison
-library(glmmTMB)
+library(nlme)
+library(MuMIn)
+library(MASS)
 
-m1<- glmmTMB(total_abundance ~ Large_rodents + All_rodents + PORU_ants + All_ants + (1|Annual_precip) + (1|Year), 
+#create Poisson global model
+global_model_P<- glm(total_abundance ~ Large_rodents + All_rodents + PORU_ants + All_ants + Annual_precip + (1|Year/Plot), 
          data = data,
-         family = poisson())
-summary(m1)
+         family = poisson(link="log"),
+         na.action = "na.fail")
+#create negative binomical global model
+global_model_NB <- glm.nb(total_abundance ~ Large_rodents + All_rodents + PORU_ants + All_ants + Annual_precip + (1|Year/Plot), 
+                       data = data,
+                       link = log,
+                       na.action = "na.fail")
+#compare AIC values between Poisson and Negative Binomial models
+AIC(global_model_P, global_model_NB)
 
-m2<- glmmTMB(total_abundance ~ Large_rodents + All_rodents + (1|Annual_precip) + (1|Year),
-             data = data,
-             family = poisson())
-summary(m2)
+#compare AIC values of all possible models from global NegBi model
+all_models_NB <- dredge(global_model_NB)
+print(all_models_NB)
+###either all_ants or PORU_ants need to be included in final model, and Annual precip
+model0 <- glm.nb(total_abundance ~ All_ants + Annual_precip + (1|Year/Plot), 
+                 data = data,
+                 link = log,
+                 na.action = "na.fail")
+#check for temporal autocorrelation
+plot(data$Year, model0$residuals)
+all_resid <- residuals(model0, type = "pearson")
+acf(all_resid)
 
-m3<- glmmTMB(total_abundance ~ All_rodents + All_ants + (1|Annual_precip) + (1|Year),
-             data = data,
-             family = poisson())
-summary(m3)
+#check for temporal autocorrelation within each plot
+library(DHARMa)
+#simulated residuals
+sim_res <- simulateResiduals(model0)
+norm_resid <- sim_res$scaledResiduals
 
-m4 <- glmmTMB(total_abundance ~ All_rodents + PORU_ants + (1|Annual_precip) + (1|Year),
-              data = data,
-              family = poisson())
-summary(m4)
+data$norm_resid <- norm_resid
 
-m5 <- glmmTMB(total_abundance ~ Large_rodents + All_rodents + PORU_ants + (1|Annual_precip) + (1|Year),
-              data = data,
-              family = poisson())
-summary(m5)
+unique_plots <- unique(data$Plot)
 
-AIC(m1, m2, m3, m4, m5)
+par(mfrow = c(4, 6))
+for (p in unique_plots) {
+  plot_data <- data[data$Plot == p, ]
+  plot_data <- data[order(plot_data$Year),]
+  
+  if (nrow(plot_data) > 5) {
+    acf(plot_data$norm_resid)
+  }
+}
+#actual residuals
 
-plot(m5$fitted.values, m5$residuals)
-plot(m2)
+data$all_resid <- all_resid
+
+unique_plots <- unique(data$Plot)
+
+par(mfrow = c(4, 6))
+for (p in unique_plots) {
+  plot_data <- data[data$Plot == p, ]
+  plot_data <- data[order(plot_data$Year),]
+  
+  acf(plot_data$all_resid)
+}
+
+sim <- simulateResiduals(fittedModel = model0)
+plot(sim)
+
+
+###acf shows no temporal autocorrelation
+
+# spatial autocorrelation
+# plot as random effect
+# precip as factor
+# random slope of annual precip?
+#   temporal autocorrealtion, but look plot by plot ove ryear
+# spatial autocorrelation: look at spatial correlation in each year
+# (1|year/plot)
