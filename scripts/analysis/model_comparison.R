@@ -79,21 +79,21 @@ acf(all_resid)
 #check for temporal autocorrelation within each plot
 library(DHARMa)
 #simulated residuals
-sim_res <- simulateResiduals(model0)
-norm_resid <- sim_res$scaledResiduals
-
-data$norm_resid <- norm_resid
-
-unique_plots <- unique(data$Plot)
-
-par(mfrow = c(4, 6))
-for (p in unique_plots) {
-  plot_data <- data[data$Plot == p, ]
-  plot_data <- data[order(plot_data$Year),]
-  
-  if (nrow(plot_data) > 5) {
-    acf(plot_data$norm_resid)
-  }
+# sim_res <- simulateResiduals(model0)
+# norm_resid <- sim_res$scaledResiduals
+# 
+# data$norm_resid <- norm_resid
+# 
+# unique_plots <- unique(data$Plot)
+# 
+# par(mfrow = c(4, 6))
+# for (p in unique_plots) {
+#   plot_data <- data[data$Plot == p, ]
+#   plot_data <- data[order(plot_data$Year),]
+#   
+#   if (nrow(plot_data) > 5) {
+#     acf(plot_data$norm_resid)
+#   }
 }
 #actual residuals
 
@@ -106,7 +106,7 @@ for (p in unique_plots) {
   plot_data <- data[data$Plot == p, ]
   plot_data <- data[order(plot_data$Year),]
   
-  acf(plot_data$all_resid)
+  acf(plot_data$all_resid, main = paste("Plot ", p))
 }
 
 sim <- simulateResiduals(fittedModel = model0)

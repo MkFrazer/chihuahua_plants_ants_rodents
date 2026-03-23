@@ -9,29 +9,314 @@ output: pdf_document
 This page was last updated on `r format(Sys.time(), '%B %d, %Y')`.
 
 ------------------------------------------------------------------------
+
 # Background
+
 This document outlines the steps of all analyses included in my project, "Plant abundance as a function of predator exclusion in the Chihuahua desert," including all data processing, model fitting, and figure generation.
 
 The data is longitudinal ecological data (1977-2002) by [@ernest2009]. It is publicly accessible, accessed [here](https://www.esapubs.org/archive/ecol/E090/118/metadata.htm).
 
-These data are comprised of plant species abundance data, rodent species abundance and physiological data, and ant colony abundance data.
-These data were collected on 24 plots in the Chihuahua desert near Portal, Arizona, USA, along with precipitation data. 
+These data are comprised of plant species abundance data, precipitation data, and binary treatment data (predator presence/absence) created from the table found in Table 1 of the online [metadata](https://esapubs.org/archive/ecol/E090/118/metadata.htm) (see Data Import). These data were collected on 24 plots in the Chihuahua desert near Portal, Arizona, USA, with 1 precipitation data point for all plots.
 
 # Data Import
-Download CSV files from above site (plant and precipitation data). These data are comprised of plant species abundance data and precipitation over varying time periods. 
-These data were collected on 24 plots in the Chihuahuan desert near Portal, Arizona, USA, along with precipitation data (one precipitation measurement for all plots). 
 
-For treatments, a qualitative table of the treatments each plot received on which years can be found in the metadata for this data set (https://www.esapubs.org/archive/ecol/E090/118/metadata.htm). This project includes a copy of that qualitative table in CSV form (plot_treatments). It also includes a quantitative version, where each unique combination of plot and year has corresponding binary values representing the inclusion or exclusion of kangaroo rats (large rodents), all rodents, Pogonomyrmex rugosus (a granivorous ant species), or all ants. 0 = excluded (not present), 1 = included (present). This table is what is used in the following analyses.
+Download CSV files from above site (plant and precipitation data).
+
+For treatments, a qualitative table of the treatments each plot received on which years can be found in the metadata for this [data set](https://www.esapubs.org/archive/ecol/E090/118/metadata.htm). This project includes a copy of that qualitative table in CSV form (plot_treatments). It also includes a quantitative version, where each unique combination of plot and year has corresponding binary values representing the inclusion or exclusion of kangaroo rats (large rodents), all rodents, *Pogonomyrmex rugosus* (a granivorous ant species), or all ants. 0 = excluded (not present), 1 = included (present). This table is what is used in the following analyses.
 
 # Data Cleaning
+
 While the longitudinal study went from 1977-2002, we only used data from 1989–2002 because that is when plant species-level abundances were consistently recorded.
 
 ## Plants
 
+In this step, we create a sum of total species detected in each plot per year (combing winter/summer and annual/perennial) and filter to years 1989-2002.
+
+1.  Load packages 'dplyr', 'tidyr', and 'here'.
+
+```{R}
+library(dplyr)
+library(tidyr)
+library(here)
+```
+
+2.  Read in the four plant CSV files
+
+```{R}
+#Download the CSV files and insert your path to the files here
+plants_1 <- read.csv(here("path", "to", "data", "Portal_plant_summer_annual_19892002.csv"))
+plants_2 <- read.csv(here("path", "to", "data", "Portal_plant_summer_perennial_19892002.csv"))
+plants_3 <- read.csv(here("path", "to", "data", "Portal_plant_winter_annual_19892002.csv"))
+plants_4 <- read.csv(here("path", "to", "data", "Portal_plant_winter_perennial_19892002.csv"))
+```
+
+3.  Calculate total abundance per plot per year
+
+```{R}
+#Pivot tables to be long ("pivot_longer") while excluding columns "Season", "Life.History", "Year", "Plot", and "Quadrat."
+long_plants_1 <- plants_1 %>%
+  pivot_longer(
+    cols = !c("Season", "Life.History", "Year", "Plot", "Quadrat"),
+    names_to = "species",
+    values_to = "abundance")    # Change column names to "species" and "abundance."
+long_plants_1 <- long_plants_1 %>% mutate(abundance = na_if(abundance, -99))      #Change all "-99" values in "abundance" column to NAs (was not measured). 
+
+long_plants_2 <- plants_2 %>%
+  pivot_longer(
+    cols = !c("Season", "Life.History", "Year", "Plot", "Quadrat"),
+    names_to = "species",
+    values_to = "abundance")
+long_plants_2 <- long_plants_2 %>% mutate(abundance = na_if(abundance, -99))
+
+long_plants_3 <- plants_3 %>%
+  pivot_longer(
+    cols = !c("Season", "Life.History", "Year", "Plot", "Quadrat"),
+    names_to = "species",
+    values_to = "abundance")
+long_plants_3 <- long_plants_3 %>% mutate(abundance = na_if(abundance, -99))
+
+long_plants_4 <- plants_4 %>%
+  pivot_longer(
+    cols = !c("Season", "Life.History", "Year", "Plot", "Quadrat"),
+    names_to = "species",
+    values_to = "abundance")
+long_plants_4 <- long_plants_4 %>% mutate(abundance = na_if(abundance, -99))
+```
+
+4.  Create a column for total species abundance per plot per year
+
+```{R}
+total_abundance_1 <- long_plants_1 %>% 
+  group_by(Plot, Year) %>% #group by Plot and Year
+  summarize(
+    total_abundance = sum(abundance, na.rm = TRUE), #exclude NAs
+    n_species = n(),
+    .groups = "drop"    #drop original abundance column
+  )
+
+total_abundance_2 <- long_plants_2 %>% 
+  group_by(Plot, Year) %>% 
+  summarize(
+    total_abundance = sum(abundance, na.rm = TRUE),
+    n_species = n(),
+    .groups = "drop"
+  )
+
+total_abundance_3 <- long_plants_3 %>% 
+  group_by(Plot, Year) %>% 
+  summarize(
+    total_abundance = sum(abundance, na.rm = TRUE),
+    n_species = n(),
+    .groups = "drop"
+  )
+
+total_abundance_4 <- long_plants_4 %>% 
+  group_by(Plot, Year) %>% 
+  summarize(
+    total_abundance = sum(abundance, na.rm = TRUE),
+    n_species = n(),
+    .groups = "drop"
+  )
+```
+
+5.  Combine 4 data frames into 1 data frame, summing all species abundances
+
+```{R}
+plants <- merge(total_abundance_1, total_abundance_2, by = c("Plot","Year"), all = TRUE)   #merge the first two data frames using Plot and Year, keeping all columns
+plants <- plants %>%  mutate(total_abundance = total_abundance.x + total_abundance.y, .keep = "unused")   #create a new column that is the sum of the two abundance columns of the previous 2 data frames, and only keeping the new column
+plants <- plants %>%  mutate(total_species = n_species.x + n_species.y, .keep = "unused")    #create a new column that is the sum of the two species count columns and keeping only the new column
+
+plants <- merge(plants, total_abundance_3, by = c("Plot", "Year"), all = TRUE)
+plants <- plants %>%  mutate(abundance = total_abundance.x + total_abundance.y, .keep = "unused")
+plants <- plants %>%  mutate(total_species = n_species + total_species, .keep = "unused")
+
+plants <- merge(plants, total_abundance_4, by = c("Plot", "Year"), all = TRUE)
+plants <- plants %>%  mutate(total_abundance = total_abundance + abundance, .keep = "unused")
+plants <- plants %>%  mutate(total_species = n_species + total_species, .keep = "unused")
+```
+
+6.  Create an "average abundance per species" column.
+
+```{R}
+plants <- plants %>% mutate(avg_abundance = total_abundance/total_species)    #sum of total abundance divided by the sum of species counts
+```
+
+7.  Filter to years 1989-2002
+
+```{R}
+plants_clean <- filter(plants, Year >= 1989)
+```
 
 ## Precipitation
-1. Load packages (dplyr, here)
-2. Read in the two precipitation files (different time periods with different measurement frequencies).
-3. Change column names to be identical between both data frames. Exclude Day and Hour columns from precip2 (unique to precip2).
-4. Average precipitation over each year for each precip data frame into a new column. 
-5. 
+
+1.  Load packages (dplyr, here)
+```{R}
+#load packages
+library(dplyr)
+library(here)
+```
+
+2.  Read in the two precipitation files (different time periods with different measurement frequencies).
+```{R}
+#replace with path to your file
+precip_1 <- read.csv(here("path", "to", "file", "Portal_precipitation_19801989.csv"))
+precip_2 <- read.csv(here("path", "to", "file", "Portal_precipitation_19892002.csv"))
+```
+
+3.  Change column names to be identical between both data frames. Exclude Day and Hour columns from precip2 (unique to precip2).
+```{R}
+precip_2 <- precip_2 %>% select(-c(Hour, Day)) #don't include Hour or Day
+precip_1 <- rename(precip_1, Precipitation = precipitation) #lowercase column name
+```
+
+4.  Average precipitation over each year for each precip data frame into a new column.
+```{R}
+precip_1 <- precip_1 %>% group_by(Year) %>%    #group by Year
+            mutate(Annual_precip = sum(Precipitation, na.remove = TRUE)) %>%    #sum precipitation for each year
+            ungroup()
+
+precip_2 <- precip_2 %>% group_by(Year) %>% 
+  mutate(Annual_precip = sum(Precipitation, na.remove = TRUE)) %>% 
+  ungroup()
+```
+
+5. Select Year and Annual_precip columns
+```{R}
+precip_1 <- precip_1 %>% select(Year, Annual_precip)
+precip_2 <- precip_2 %>% select(Year, Annual_precip) 
+```
+
+6. Combine both data sets into one data frame
+```{R}
+precip_clean <- full_join(precip_1, precip_2)
+precip_clean <- precip_clean %>% distinct()
+```
+
+7. Filter to years 1989-2002
+```{R}
+precip_clean <- filter(precip_clean, Year >= 1989)
+```
+
+8. Combine the 1989 columns (because 1989 was split between both data frames)
+```{R}
+precip_clean <- precip_clean %>% group_by(Year) %>% 
+  summarize(Annual_precip = sum(Annual_precip), .groups = "drop")
+```
+
+# Analysis
+
+## Combine data frames
+
+1. Read in Treatment CSV file from GitHub, edit column names to match plants and precip data frame column names
+```{R}
+#read in file
+treatments <- read.csv("https://raw.githubusercontent.com/MkFrazer/chihuahua_plants_ants_rodents/refs/heads/main/data/data_processed/treatments.csv") 
+
+#fix treatments column names to match
+treatments <- rename(treatments, Plot = PLOT, Year = YEAR, Large_rodents = LARGE_RODENTS, All_rodents = ALL_RODENTS, PORU_ants = PORU_ANTS, All_ants = ALL_ANTS)
+```
+
+2. Combine data frames
+```{R}
+#combine data frames
+data <- full_join(precip, plants, by = "Year")
+data <- full_join(data, treatments, by = c("Plot", "Year"))
+
+#order columns, filter to >=1989
+data <- data[, c("Plot", "Year", "total_species", "total_abundance", "avg_abundance", "Large_rodents", "All_rodents", "PORU_ants", "All_ants", "Annual_precip")]
+data<- filter(data, Year >= 1989)   #filter to 1989 and later
+data<- data[order(data$Plot), ]  #order rows according to plot number
+
+#make presence/absence treatments binary categories
+data$Large_rodents<- as.factor(data$Large_rodents)
+data$All_rodents<- as.factor(data$All_rodents)
+data$PORU_ants<- as.factor(data$PORU_ants)
+data$All_ants<- as.factor(data$All_ants)
+```
+
+## Visualization
+
+Create plots comparing dependent variable (total species abundance) according to each independent variable (precipitation, large rodents, all rodents, PORU, or all ants presence/absence)
+```{R}
+#plot total species abundance as a factor of precip
+plot(data$Annual_precip, data$total_abundance)
+
+#plot total species abundance as a factor of large rodent presence/absence
+plot(data$Large_rodents, data$total_abundance)
+
+#plot total species abundance as a factor of all rodent presence/absence
+plot(data$All_rodents, data$total_abundance)
+
+#plot total species abundance as a factor of PORU presence/absence
+plot(data$PORU_ants, data$total_abundance)
+
+#plot total species abundance as a factor of all ants presence/absence
+plot(data$All_ants, data$total_abundance)
+
+```
+
+## Model Comparison
+
+1. Load packages 'nlme,' 'MuMIn,' 'MASS.'
+```{R}
+library(nlme)
+library(MuMIn)
+library(MASS)
+```
+
+2. Total species abundance is count data: compare Poisson and Negative Binomial global models using AIC to determine best model for this data.
+```{R}
+#create Poisson global model
+global_model_P<- glm(total_abundance ~ Large_rodents + All_rodents + PORU_ants + All_ants + Annual_precip + (1|Year/Plot), 
+         data = data,
+         family = poisson(link="log"),   #log link
+         na.action = "na.fail")
+
+#create negative binomical global model
+global_model_NB <- glm.nb(total_abundance ~ Large_rodents + All_rodents + PORU_ants + All_ants + Annual_precip + (1|Year/Plot), 
+                       data = data,
+                       link = log,      #log link
+                       na.action = "na.fail")
+
+#compare AIC values between Poisson and Negative Binomial models
+AIC(global_model_P, global_model_NB)
+
+#Negative binomial model was better than the Poisson
+```
+
+3. Compare all possible models from global model using dredge() to determine which factors are most important to include in base model (model0)
+```{R}
+all_models_NB <- dredge(global_model_NB)
+print(all_models_NB)
+
+###either all_ants or PORU_ants need to be included in final model, and Annual precip
+
+model0 <- glm.nb(total_abundance ~ All_ants + Annual_precip + (1|Year/Plot), 
+                 data = data,
+                 link = log,
+                 na.action = "na.fail")
+```
+
+4. Check for temporal autocorrelation
+```{R}
+plot(data$Year, model0$residuals)
+all_resid <- residuals(model0, type = "pearson")
+acf(all_resid)   #there seems to be some sort of temporal autocorrelation
+
+#check for temporal autocorrelation within each plot
+library(DHARMa)
+
+data$all_resid <- all_resid   #put residuals into original data frame
+
+unique_plots <- unique(data$Plot)   #new df with each plot number
+
+par(mfrow = c(4, 6)) #24 plots
+for (p in unique_plots) {
+  plot_data <- data[data$Plot == p, ]
+  plot_data <- data[order(plot_data$Year),]
+  
+  acf(plot_data$all_resid, main = paste("Plot ", p)) #include plot number in title
+}
+#No significant autocorrelation by plot, autocorrelation must be from something else
+```
+
