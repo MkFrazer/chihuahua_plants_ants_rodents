@@ -32,22 +32,21 @@ While the longitudinal study went from 1977-2002, we only used data from 1989–
 
 In this step, we create a sum of total species detected in each plot per year (combing winter/summer and annual/perennial) and filter to years 1989-2002.
 
-1.  Load packages 'dplyr', 'tidyr', and 'here'.
+1.  Load packages 'dplyr', and 'tidyr'.
 
 ```{R}
 library(dplyr)
 library(tidyr)
-library(here)
 ```
 
-2.  Read in the four plant CSV files
+2.  Read in the four plant CSV files (1989-2002)
 
 ```{R}
-#Download the CSV files and insert your path to the files here
-plants_1 <- read.csv(here("path", "to", "data", "Portal_plant_summer_annual_19892002.csv"))
-plants_2 <- read.csv(here("path", "to", "data", "Portal_plant_summer_perennial_19892002.csv"))
-plants_3 <- read.csv(here("path", "to", "data", "Portal_plant_winter_annual_19892002.csv"))
-plants_4 <- read.csv(here("path", "to", "data", "Portal_plant_winter_perennial_19892002.csv"))
+#Download the CSV files and insert your path to the files here, or download using the below Github links
+plants_1 <- read.csv("https://raw.githubusercontent.com/MkFrazer/chihuahua_plants_ants_rodents/refs/heads/main/data/data_raw/Plants_raw/Portal_plant_summer_annual_19892002.csv")
+plants_2 <- read.csv("https://raw.githubusercontent.com/MkFrazer/chihuahua_plants_ants_rodents/refs/heads/main/data/data_raw/Plants_raw/Portal_plant_summer_perennial_19892002.csv")
+plants_3 <- read.csv("https://raw.githubusercontent.com/MkFrazer/chihuahua_plants_ants_rodents/refs/heads/main/data/data_raw/Plants_raw/Portal_plant_summer_perennial_19892002.csv")
+plants_4 <- read.csv("https://raw.githubusercontent.com/MkFrazer/chihuahua_plants_ants_rodents/refs/heads/main/data/data_raw/Plants_raw/Portal_plant_winter_perennial_19892002.csv")
 ```
 
 3.  Calculate total abundance per plot per year
@@ -153,13 +152,12 @@ plants_clean <- filter(plants, Year >= 1989)
 ```{R}
 #load packages
 library(dplyr)
-library(here)
 ```
 
 2.  Read in the two precipitation files (different time periods with different measurement frequencies).
 ```{R}
-#replace with path to your file
-precip_1 <- read.csv(here("path", "to", "file", "Portal_precipitation_19801989.csv"))
+#replace with path to your file, or use Github links
+precip_1 <- read.csv("https://raw.githubusercontent.com/MkFrazer/chihuahua_plants_ants_rodents/refs/heads/main/data/data_raw/Precip_raw/Portal_precipitation_19801989.csv")
 precip_2 <- read.csv(here("path", "to", "file", "Portal_precipitation_19892002.csv"))
 ```
 
@@ -236,7 +234,7 @@ data$All_ants<- as.factor(data$All_ants)
 
 ## Visualization
 
-Create plots comparing dependent variable (total species abundance) according to each independent variable (precipitation, large rodents, all rodents, PORU, or all ants presence/absence)
+Create plots comparing dependent variable (total species abundance) according to each independent variable (precipitation, large rodents, all rodents, PORU, or all ants presence/absence). Use z-scores to detect potential outliers to be aware of later on.
 ```{R}
 #plot total species abundance as a factor of precip
 plot(data$Annual_precip, data$total_abundance)
@@ -253,6 +251,10 @@ plot(data$PORU_ants, data$total_abundance)
 #plot total species abundance as a factor of all ants presence/absence
 plot(data$All_ants, data$total_abundance)
 
+#detect potential outliers using z-scores
+z_scores <- scale(data$total_abundance)
+outliers <- data$total_abundance[abs(z_scores) > 3]
+print(outliers)
 ```
 
 ## Model Comparison
@@ -264,8 +266,11 @@ library(MuMIn)
 library(MASS)
 ```
 
-2. Total species abundance is count data: compare Poisson and Negative Binomial global models using AIC to determine best model for this data.
+1. Total species abundance is count data: compare Poisson and Negative Binomial global models using AIC to determine best model for this data.
 ```{R}
+#scale predictors to help optimizer converge
+data$Annual_precip_s <- scale(data$Annual_precip)
+
 #create Poisson global model
 global_model_P<- glm(total_abundance ~ Large_rodents + All_rodents + PORU_ants + All_ants + Annual_precip + (1|Year/Plot), 
          data = data,
@@ -284,39 +289,247 @@ AIC(global_model_P, global_model_NB)
 #Negative binomial model was better than the Poisson
 ```
 
-3. Compare all possible models from global model using dredge() to determine which factors are most important to include in base model (model0)
+1. Compare all possible models from global model using dredge() to determine which factors are most important to include in base model (model0). Determine if random factors should be nested or crossed and if confounding between Annual_precip and Year confound model.
 ```{R}
 all_models_NB <- dredge(global_model_NB)
 print(all_models_NB)
 
 ###either all_ants or PORU_ants need to be included in final model, and Annual precip
 
-model0 <- glm.nb(total_abundance ~ All_ants + Annual_precip + (1|Year/Plot), 
+#include Year and Plot as random factors
+
+model0 <- glm.nb(total_abundance ~ All_ants + Annual_precip + (1|Year) + (1|Plot), 
                  data = data,
                  link = log,
                  na.action = "na.fail")
+
+#Compare Random effects: are Year and Plot nested, or crossed?
+model1<- glmer.nb(total_abundance ~ All_ants + Annual_precip_s + (1|Year/Plot), 
+                  data = data,
+                  na.action = "na.fail")
+AIC(model0,model1)
+### better AIC value with crossed random factors, which makes sense. The plots are the same over the years, not different each year.
+
+#however, because there is only a single precipitation value for each year, they are confounded.
+#Is it better to include Year as a random factor, or is most of the year-to-year variance captured in Annual_precip?
+
+#exclude Year as a random factor
+model2<- glmer.nb(total_abundance ~ All_ants + Annual_precip_s + (1|Plot), 
+                     data = data,
+                     na.action = "na.fail")
+AIC(model0, model2)
+### the model with Year as a random factor is significantly better than without Year. Keep year and account for potential confounding in conclusions. But to double-check, let's see how the coefficients differ.
+
+fixef(model2)
+fixef(model0)
+###the coefficient of Annual Precipitation is about the same between the two models (0.47 without Year as a random factor, 0.41 with Year as a random factor), so we can report this value with relative confidence, even with confounding effects
 ```
 
-4. Check for temporal autocorrelation
+1. Check for residual structure using DHARMa. 
 ```{R}
-plot(data$Year, model0$residuals)
-all_resid <- residuals(model0, type = "pearson")
-acf(all_resid)   #there seems to be some sort of temporal autocorrelation
+#install DHARMa package
+library(DHAMRa)
 
-#check for temporal autocorrelation within each plot
-library(DHARMa)
+#compare simulated residuals to actual residuals
+sim <- simulateResiduals(fittedModel = model0)
+plot(sim)
+###these residuals are all over the place. high deviation.
 
-data$all_resid <- all_resid   #put residuals into original data frame
+#check to see if a zero-inflation would be a better model
+testZeroInflation(model0)
+###No, all values <1
 
-unique_plots <- unique(data$Plot)   #new df with each plot number
+#check to see if adding another variable corrects for residual structure. 
+#We saw in Model Selection Table that including All_rodents was only a delta of 1.57 from top model. Let's add All_rodents to see if that improves residuals.
+model_rodents <- glmer.nb(total_abundance ~ All_ants + All_rodents + Annual_precip_s + (1|Year) + (1|Plot), 
+                          data = data,
+                          na.action = "na.fail")
 
-par(mfrow = c(4, 6)) #24 plots
+#compare to simulated residuals
+sim_rodents <- simulateResiduals(model_rodents)
+plot(sim_rodents)
+###these residuals seem much cleaner and smoother than before, now it's almost quadratic.
+
+###### After DHARMa, can check using normal residuals
+
+#check residuals vs fitted
+plot(fitted(model_rodents), residuals(model_rodents))
+###we see an unbalanced x. possibly need a quadratic in model
+
+###### Find cause of residual structure ######
+
+#compare residuals against each thing in the model to see structure
+
+#Annual precip 
+plot(data$Annual_precip, residuals(model_rodents))
+###Residual variance increases with precipitation, 
+###Strong negative skew at higher precipitation values
+
+#All_ants
+plot(data$All_ants, residuals(model_rodents))
+###wider range when ants are present, both have long negative tails
+
+#All_rodents
+plot(data$All_rodents, residuals(model_rodents))
+###size and range is similar between groups. both have long negative tails
+
+###need to add variance structure, most likely from Annual_precip but it could help Ants and Rodents, too
+```
+
+1. Add variance structure. Use model comparison (AIC) to determine if fixed, power, exponential, or constant + power are the best ways to incorporate residual dispersion into model. In order to do that, we need to use glmmTMB instead of glmer.
+```{R}
+
+#install glmmTMB package
+library(glmmTMB)
+
+#compare fixed, power, and exponential variance structures
+
+#base model using glmmTMB
+model_tmb<- glmmTMB(total_abundance ~ All_ants + All_rodents + Annual_precip_s + (1|Year) + (1|Plot), 
+                    data = data,
+                    family = nbinom2(link = "log"),
+                    na.action = "na.fail",
+                    REML = FALSE)
+
+#fixed variance (must use log because Negative binomial uses a log link, and must be offset so that it doesn't produce NA/NANs)
+model_fixed <-glmmTMB(total_abundance ~ All_ants + All_rodents + Annual_precip_s + (1|Year) + (1|Plot),
+                      data = data,
+                      family = nbinom2(link="log"),
+                      dispformula = ~offset(log(Annual_precip)),
+                      na.action = "na.fail", 
+                      REML = FALSE)
+
+#power variance (use log)
+model_power <- glmmTMB(total_abundance ~ All_ants + All_rodents + Annual_precip_s + (1|Year) + (1|Plot),
+                       data = data,
+                       family = nbinom2(link="log"),
+                       dispformula = ~log(Annual_precip),
+                       na.action = "na.fail", 
+                       REML = FALSE)
+
+#exponential variance (already accounted for in glmmTMB model, just need to identify the variable name in dispformula)
+model_exp <- glmmTMB(total_abundance ~ All_ants + All_rodents + Annual_precip_s + (1|Year) + (1|Plot),
+                     data = data,
+                     family = nbinom2(link="log"),
+                     dispformula = ~ Annual_precip_s,
+                     na.action = "na.fail", 
+                     REML = FALSE)
+
+#constant plus power variance (adding a quadratic element)
+model_constpower <- glmmTMB(total_abundance ~ All_ants + All_rodents + Annual_precip_s + (1|Year) + (1|Plot),
+                         data = data,
+                         family = nbinom2(link="log"),
+                         dispformula = ~ Annual_precip_s + I(Annual_precip_s^2),
+                         na.action = "na.fail", 
+                         REML = FALSE)
+
+#compare the above models using AIC
+AIC(model_tmb, model_fixed, model_power, model_exp, model_constpower)
+### Exponential variance is the better model (or constant power, but they are identical)
+
+#plot residuals of new model including exponential variance structure
+plot(fitted(model_exp), residuals(model_exp, type = "pearson"))
+#compare to simulated residuals
+sim_exp <- simulateResiduals(model_exp)
+plot(sim_exp, main = "Exponential Variance")
+
+### There is stil a lot of variance that might be explained by adding missing predictor variables.
+
+#add interactive term between ants and rodents to see if that captures some variation in residuals
+model_complex <- glmmTMB(total_abundance ~ All_ants + All_rodents + Annual_precip_s + (1|Year) + (1|Plot),
+                       data = data,
+                       family = nbinom2(link="log"),
+                       dispformula = ~ Annual_precip_s + All_ants * All_rodents,
+                       na.action = "na.fail", 
+                       REML = FALSE)
+
+#compare to simulated residuals
+sim_comp <- simulateResiduals(model_complex)
+plot(sim_comp)
+###no significant deviation in QQ plot, and smoother lines in DHARMa residual plot
+###keep model with complex variance
+
+```
+
+
+1. Check for temporal autocorrelation
+```{R}
+#plot the residuals according to each year to see if they change over time or according to Year
+plot(data$Year, residuals(model_complex, type = "pearson"))
+###not too much spread, but we can check using ACF
+
+all_resid <- residuals(model_complex, type = "pearson")
+acf(all_resid)   #there might be some sort of temporal autocorrelation
+
+#check for temporal autocorrelation within each plot (is each plot autocorrelated with itself over the years?)
+
+#put residuals into original data frame
+data$all_resid <- all_resid   
+
+#new data frame with each plot number
+unique_plots <- unique(data$Plot)   
+
+#be able to see 24 plots in Figure window
+par(mfrow = c(4, 6)) 
 for (p in unique_plots) {
   plot_data <- data[data$Plot == p, ]
   plot_data <- data[order(plot_data$Year),]
   
   acf(plot_data$all_resid, main = paste("Plot ", p)) #include plot number in title
 }
-#No significant autocorrelation by plot, autocorrelation must be from something else
+
+###No significant autocorrelation by plot, autocorrelation must be from something else
+
+#restructure Figure window
+par(mfrow = c(1,1))
 ```
 
+1. Check to see if outliers are affecting predicted coefficients. Rerun model without outlier and compare the coefficient with the original model
+```{R}
+# use Pearson residuals and flag anything beyond ±3
+pearson_resids <- residuals(model_complex, type = "pearson")
+outlier_idx <- which(abs(pearson_resids) > 3)
+
+# View the suspicious observations
+data[outlier_idx, ]
+
+# Plot to see their location
+plot(fitted(model_complex), pearson_resids)
+###one clear point 6 sd away
+
+#use DHARMa to see the effects of the outlier on the model
+sim_complex <- simulateResiduals(model_complex)
+testOutliers(sim_complex, type = "bootstrap")
+
+# Visual - outliers flagged in red
+plot(sim_complex)
+
+model_no_outlier <- glmmTMB(total_abundance ~ All_ants + All_rodents + Annual_precip_s + (1|Year) + (1|Plot),
+                            data = data[-outlier_idx, ],
+                            family = nbinom2(link = "log"),
+                            dispformula = ~ Annual_precip_s + All_ants * All_rodents,
+                            na.action = "na.fail",
+                            REML = FALSE)
+summary(model_no_outlier)
+summary(model_complex)
+###coefficients are basically the same, so the outlier isn't affecting the model much
+```
+
+# Interpretation
+
+Run summary() on the model to view the coefficients and their values.
+```{R}
+summary(model_complex)
+```
+
+## Results
+In conditional model, the intercept and the presence or absence of all ants were significant predictors of total plant species abundance.
+The presence of ants negatively impacted total plant species abundance by -0.3170 (p = 0.00569). 
+However, while the presence/absence of Rodents helped account for variance in th model (particularly its interaction with ants, p-value = 0.0904), it was not a significant predictor of plant species abundance (p-value = 0.29836)
+Annual precipitation (scaled) was not a significant predictor of plant species abundance (p-value = 0.19516). 
+
+In dispersion model, annual precipitation (scaled) significantly affected the dispersion of the model (p = 1.30e-07). 
+
+## Discussion
+The presence or absence of ants on a plot was the strongest predictor of total plant species abundance, controlling for year and plot. The presence of ants negatively affected plant species abundance, much more significantly than the presence of rodents on the plot, although there is likely an interactive effect. Annual precipitation explained the variance of total plant species abundance from the predicted model, but was not itself a significant predictor of total plant species abundance. 
+```
