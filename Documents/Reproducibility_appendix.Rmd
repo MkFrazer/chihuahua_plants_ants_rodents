@@ -24,6 +24,11 @@ Download CSV files from above site (plant and precipitation data).
 
 For treatments, a qualitative table of the treatments each plot received on which years can be found in the metadata for this [data set](https://www.esapubs.org/archive/ecol/E090/118/metadata.htm). This project includes a copy of that qualitative table in CSV form (plot_treatments). It also includes a quantitative version, where each unique combination of plot and year has corresponding binary values representing the inclusion or exclusion of kangaroo rats (large rodents), all rodents, *Pogonomyrmex rugosus* (a granivorous ant species), or all ants. 0 = excluded (not present), 1 = included (present). This table is what is used in the following analyses.
 
+```{r setup, include=FALSE}
+library(formatR)
+knitr::opts_chunk$set(tidy.opts = list(width.cutoff = 60), tidy = TRUE)
+```
+
 # Data Cleaning
 
 While the longitudinal study went from 1977-2002, we only used data from 1989–2002 because that is when plant species-level abundances were consistently recorded.
@@ -158,12 +163,12 @@ library(dplyr)
 ```{R}
 #replace with path to your file, or use Github links
 precip_1 <- read.csv("https://raw.githubusercontent.com/MkFrazer/chihuahua_plants_ants_rodents/refs/heads/main/data/data_raw/Precip_raw/Portal_precipitation_19801989.csv")
-precip_2 <- read.csv(here("path", "to", "file", "Portal_precipitation_19892002.csv"))
+precip_2 <- read.csv("https://raw.githubusercontent.com/MkFrazer/chihuahua_plants_ants_rodents/refs/heads/main/data/data_raw/Precip_raw/Portal_precipitation_19892002.csv")
 ```
 
 3.  Change column names to be identical between both data frames. Exclude Day and Hour columns from precip2 (unique to precip2).
 ```{R}
-precip_2 <- precip_2 %>% select(-c(Hour, Day)) #don't include Hour or Day
+precip_2 <- precip_2 %>% dplyr::select(-Hour, -Day) #don't include Hour or Day
 precip_1 <- rename(precip_1, Precipitation = precipitation) #lowercase column name
 ```
 
@@ -217,7 +222,7 @@ treatments <- rename(treatments, Plot = PLOT, Year = YEAR, Large_rodents = LARGE
 2. Combine data frames
 ```{R}
 #combine data frames
-data <- full_join(precip, plants, by = "Year")
+data <- full_join(precip_clean, plants_clean, by = "Year")
 data <- full_join(data, treatments, by = c("Plot", "Year"))
 
 #order columns, filter to >=1989
@@ -268,20 +273,22 @@ library(MASS)
 
 1. Total species abundance is count data: compare Poisson and Negative Binomial global models using AIC to determine best model for this data.
 ```{R}
+#load lme4 package
+library(lme4)
+
 #scale predictors to help optimizer converge
 data$Annual_precip_s <- scale(data$Annual_precip)
 
 #create Poisson global model
-global_model_P<- glm(total_abundance ~ Large_rodents + All_rodents + PORU_ants + All_ants + Annual_precip + (1|Year/Plot), 
+global_model_P<- glmer(total_abundance ~ Large_rodents + All_rodents + PORU_ants + All_ants + Annual_precip + (1|Year/Plot), 
          data = data,
          family = poisson(link="log"),   #log link
          na.action = "na.fail")
 
 #create negative binomical global model
-global_model_NB <- glm.nb(total_abundance ~ Large_rodents + All_rodents + PORU_ants + All_ants + Annual_precip + (1|Year/Plot), 
-                       data = data,
-                       link = log,      #log link
-                       na.action = "na.fail")
+global_model_NB <- glmer.nb(total_abundance ~ Large_rodents + All_rodents + PORU_ants + All_ants + Annual_precip_s + (1|Year) +(1|Plot), 
+                            data = data,
+                            na.action = "na.fail")
 
 #compare AIC values between Poisson and Negative Binomial models
 AIC(global_model_P, global_model_NB)
@@ -298,13 +305,12 @@ print(all_models_NB)
 
 #include Year and Plot as random factors
 
-model0 <- glm.nb(total_abundance ~ All_ants + Annual_precip + (1|Year) + (1|Plot), 
-                 data = data,
-                 link = log,
-                 na.action = "na.fail")
+model0 <- glmer.nb(total_abundance ~ All_ants + Annual_precip_s + (1|Year) + (1|Plot), 
+                   data = data,
+                   na.action = "na.fail")
 
 #Compare Random effects: are Year and Plot nested, or crossed?
-model1<- glmer.nb(total_abundance ~ All_ants + Annual_precip_s + (1|Year/Plot), 
+model1 <- glmer.nb(total_abundance ~ All_ants + Annual_precip_s + (1|Year/Plot), 
                   data = data,
                   na.action = "na.fail")
 AIC(model0,model1)
@@ -328,7 +334,7 @@ fixef(model0)
 1. Check for residual structure using DHARMa. 
 ```{R}
 #install DHARMa package
-library(DHAMRa)
+library(DHARMa)
 
 #compare simulated residuals to actual residuals
 sim <- simulateResiduals(fittedModel = model0)
@@ -453,7 +459,7 @@ plot(sim_comp)
 
 
 1. Check for temporal autocorrelation
-```{R}
+```{R, fig.width=10, fig.height=8}
 #plot the residuals according to each year to see if they change over time or according to Year
 plot(data$Year, residuals(model_complex, type = "pearson"))
 ###not too much spread, but we can check using ACF

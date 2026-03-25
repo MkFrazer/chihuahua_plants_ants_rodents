@@ -248,7 +248,7 @@ for (p in unique_plots) {
   acf(plot_data$all_resid, main = paste("Plot ", p)) #include plot number in title
 }
 #No significant autocorrelation by plot, autocorrelation must be from something else
-par(mfrow = c(1,1))
+par(mfrow =)
 
 
 
@@ -282,10 +282,45 @@ summary(model_no_outlier)
 summary(model_complex)
 ###coefficients are basically the same, so the outlier isn't affecting the model much
 
-
+#check performance
+performance::r2(model_complex)
 ############################## Interpretation #############################################
 
 summary(model_complex)
 #### in conditional model, the intercept and All_ants are significant predictors of total abundance
 #### ants negatively impact total abundance by -0.3170 (p = 0.00569). 
 #### in dispersion model, Annual precip (scaled) significantly affected the dispersion of the model
+
+############################## Visualize ################################################
+plot(data$All_ants, data$total_abundance,
+     main = "Species abundance by ant presence/absence",
+     xlab = "Ant presence, absence",
+     ylab = "Plant species abundance")
+
+plot(data$Annual_precip_s, data$total_abundance,
+     main = "Species abundancy by anmual precip",
+     xlab = "Annual precipitation (scaled)",
+     ylab = "Plant species abundance")
+
+lines(data$Year, predict(model_complex), col = "blue")
+
+data$pred <- predict(model_complex)
+ggplot(data, aes(x = factor(All_ants), y = total_abundance)) +
+  geom_boxplot() +
+  geom_point(aes(y = pred), color = "red", size = 3) 
+
+#from claude
+library(ggeffects)
+library(ggplot2)
+
+# Marginal effect of ant presence (averaged over precipitation)
+eff_ants <- ggpredict(model_complex, terms = "All_ants")
+plot(eff_ants)
+
+# Marginal effect of precipitation (averaged over ant presence)
+eff_precip <- ggpredict(model_complex, terms = "Annual_precip_s")
+plot(eff_precip)
+
+# Both together - predicted abundance across precip range, split by ant presence
+eff_both <- ggpredict(model_complex, terms = c("Annual_precip_s", "All_ants"))
+plot(eff_both)
