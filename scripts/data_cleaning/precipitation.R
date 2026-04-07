@@ -1,7 +1,7 @@
 ####### Precipitation raw -> clean
 ###### Filtered to YEAR 1989-2002
 
-#load packages
+#load in packages
 library(dplyr)
 library(here)
 

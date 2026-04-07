@@ -5,6 +5,8 @@
 ############################### AGGREGATION #################################
 
 #create data frame from components precip, plants, and treatments
+library(here)
+library(dplyr)
 
 precip <- read.csv(here("data", "data_processed", "precip_clean.csv"))
 plants <- read.csv(here("data", "data_processed", "plants_clean.csv"))
@@ -64,7 +66,7 @@ library(MASS)
 #scale predictors to help optimizer converge
 data$Annual_precip_s <- scale(data$Annual_precip)
 
-#### Choose model: Poisson or Negative Binomial?
+#### Choose model: Poisson or Negative Binomial for this count data?
 
 #create Poisson global model
 global_model_P<- glmer(total_abundance ~ Large_rodents + All_rodents + PORU_ants + All_ants + Annual_precip_s + (1|Year) + (1|Plot), 
@@ -81,7 +83,7 @@ AIC(global_model_P, global_model_NB)
 
 
 ######################### Choose Factors #############################################
-
+#use dredge to compare all possible factor combinations
 all_models_NB <- dredge(global_model_NB)
 print(all_models_NB)
 ###either all_ants or PORU_ants, and Annual precip
@@ -120,7 +122,7 @@ fixef(model0)
 ###### DHARMa residuals ######
 
 #install DHARMa package
-library(DHAMRa)
+library(DHARMa)
 
 #compare simulated residuals to actual residuals
 sim <- simulateResiduals(fittedModel = model0)
@@ -248,7 +250,7 @@ for (p in unique_plots) {
   acf(plot_data$all_resid, main = paste("Plot ", p)) #include plot number in title
 }
 #No significant autocorrelation by plot, autocorrelation must be from something else
-par(mfrow =)
+par(mfrow = c(1,1))
 
 
 

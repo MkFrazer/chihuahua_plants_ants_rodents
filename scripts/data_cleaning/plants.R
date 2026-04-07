@@ -1,5 +1,7 @@
 ####### plants raw -> clean
 ###### Filtered to YEAR 1989-2002
+
+#load in libraries
 library(dplyr)
 library(tidyr)
 library(here)
@@ -100,5 +102,5 @@ plants <- plants %>% mutate(avg_abundance = total_abundance/total_species)
 #limit to years 1989-2002
 plants_clean <- filter(plants, Year >= 1989)
 
-#export to .csv
+#export to .csv in processed data folder
 write.csv(plants_clean, file = "data/data_processed/plants_clean.csv", row.names = FALSE)
