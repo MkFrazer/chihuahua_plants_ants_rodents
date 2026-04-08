@@ -43,6 +43,9 @@ data$PORU_ants<- as.factor(data$PORU_ants)
 data$All_ants<- as.factor(data$All_ants)
 data$Plot <-as.factor(data$Plot)
 
+#scale precipitation data to fit with other data
+data$Annual_precip_s <- scale(data$Annual_precip)
+
 
 
 ######### Model ######################
@@ -52,12 +55,15 @@ data$Plot <-as.factor(data$Plot)
 # Negative Binomial model, log link
 # Variance included in the "dispformula" section, variance from all fixed variabels
 
+
 model <- glmmTMB(total_abundance ~ All_ants + All_rodents + Annual_precip_s + (1|Year) + (1|Plot),
                          data = data,
                          family = nbinom2(link="log"),
                          dispformula = ~ Annual_precip_s + All_ants * All_rodents,
                          na.action = "na.fail", 
                          REML = FALSE)
+
+saveRDS(model, file = "Documents/RDSmodel.rds")
 
 
 ########## Figures #####################

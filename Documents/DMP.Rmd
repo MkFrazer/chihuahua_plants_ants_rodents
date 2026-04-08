@@ -3,61 +3,316 @@ title: "Data Management Plan"
 author: "Madeline Frazer" 
 output: 
   pdf_document: default 
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
+
 This page was last updated on `r format(Sys.time(), '%B %d, %Y')`.
 
-* * *
+------------------------------------------------------------------------
 
-# Data Managenent Plan
+*Note: This Data Management Plan is not for the project,* Plant Species
+Abundance as a Product of Predator Exclusion, *but for my thesis, The
+Effects of Glyphosate Exposure on the Gut Microbiomes of Free-ranging
+Forest Mammals.*
+
+# Data Management Plan
 
 ## Data Collection
-What types of data will you collect, create, link to, acquire and/or record?
-### Data Type & File Formats
-What file formats will your data be collected in? Will these formats allow for data re-use, sharing and long-term access to the data?
-### Data Organization
-What conventions and procedures will you use to structure, name and version-control your files to help you and others better understand how your data are organized?
 
-## Metadata and Documentation 
+**What types of data will you collect, create, link to, acquire and/or
+record?**
+
+This project will collect several different types of data, including
+physical data, tabular data, spatial data, and metadata.
+
+Physical data will primarily be fecal samples. Fecal samples from
+ungulates, including white-tailed deer( *Odocoileus virginianus*) and
+moose ( *Alces alces*), and from meso-carnivores (including the American
+marten, *Martes americana*) will be collected by members of the British
+Columbia and Alberta Hunter and Trapper Associations during the 2024 and
+2025 hunting/trapping seasons. Small mammal fecal samples (from species
+including the red-backed vole, *Myodes gapperi*, and deer mice,
+*Peromyscus maniculatus*) will be collected by graduate students and
+technicians on several field trial plots at the Aleza Lake Research
+Forest (ALRF). All fecals will be frozen until laboratory analysis.
+
+These physical samples will be used to collect downstream molecular and
+omics data. Feces will undergo mass spectrometry residue analysis
+toquantify glyphosate and its primary degradation products. Feces will
+also undergo DNA extraction for microbiome analysis. The resulting
+genomic and metagenomic data will be stored in tabular form.
+
+Alongside these fecal samples, hunters and trappers will collect
+individual data about each animal, including species, sex, body
+condition, and cause of death. In addition, information regarding each
+hunter and trapper including name, contact information, and affiliated
+organization will be recorded. The individual data and metadata will be
+recorded in tabular form.
+
+Finally, GPS points and coordinates relating to the location of each
+site and sample collection will be recorded as spatial data.
+
+### Data Type & File Formats
+
+**What file formats will your data be collected in? Will these formats
+allow for data re-use, sharing and long-term access to the data?**
+
+The main file formats that will be used for data storage are .csv files
+and BIOM files.
+
+Sequencing data, collection data, and metadata are tabular and will be
+stored as .csv files. The results of omics data (such as identified
+microbial species in observations-by-sample) will be stored in BIOM
+files. These files are JSON supported and are useful for their
+interoperability between various bioinformatic tools and their
+standardized, compact storage of biological data and their contextual
+metadata. These file formats can be read without proprietary tools and
+increase the standardization and accessibility of all tabular data,
+including the re-use, sharing, and long-term access to the data.
+
+### Data Organization
+
+**What conventions and procedures will you use to structure, name and
+version-control your files to help you and others better understand how
+your data are organized?**
+
+Images of handwritten data sheets filled out by hunters and trappers
+during sample collection will be named according to the convention
+EGMMB_H/T_indID_date, with EGMMB as an abbreviation of the shortened
+project name, "Effects of Glyphosate on Mammalian Microbiomes"; either
+"H","T", or "S" for animal collection technique
+(hunting/trapping/surveying); an individual ID that is a unique
+alphanumeric identifier for each animal sampled in this study (which
+includes a species code, a unique two-letter code signifying the
+scientific name of the species using the respective first letters of the
+current genus and species. e.g., "AA" for moose, "PM" for deer mouse);
+and the date in ISO format (YYYYMMDD). For the tabular .csv files
+created from the information contained in the images, information will
+be grouped according to class (ungulate, meso-carnivore, rodent) and
+year of collection with the following format: EGMMB_class_YYYY.csv.
+
+Tabular data resulting from microbiome sequencing will be named
+according to sample ID, sequencing method, and sequencing date (e.g.,
+sampleID_Illumina_20251123).
+
+Tabular data resulting from residue analysis will be named according to
+sample ID, method, and analysis date (e.g., sampleID_massspec_20261501).
+
+Tabular data resulting from the computation of home range sizes and the
+disturbance of each area according to general disturbance or GBH-related
+disturbance over the past 10 years will be grouped and named according
+to species and the year or range of years of disturbance data used to
+calculate percent disturbance (e.g., species_homerange_YYYY_YYYY).
+
+## Metadata and Documentation
+
 ### FAIR
-What documentation will be needed for the data to be read and interpreted correctly in the future?
+
+**What documentation will be needed for the data to be read and
+interpreted correctly in the future?**
+
+My data will be accompanied by a README.txt file which will elaborate
+the structure (i.e., a textual breakdown of what data can be found in
+each data frame) and metadata (such as units of measurement and
+classification systems) of my data in addition to the methodology used
+for data collection. It will also include variable names and
+descriptions. Because this project is so comprehensive, it will include
+the details of those who worked on the various aspects of this project
+and where they were based out of (UNBC, UBCO, BCHTA, AHTA, etc.).
+
+Within each R script, there will be helpful comments to give context and
+clarity of where the data are coming from and why each process is being
+run.
+
 ### Metadata
-If you are using a metadata standard and/or tools to document and describe your data, please list here.
+
+**If you are using a metadata standard and/or tools to document and
+describe your data, please list here.**
+
+This project's data spans at least three different metadata types:
+ecological data, genomic data, and crystallographic data.
+
+Ecological data will follow EML guidelines for metadata standards and
+can be encoded using appropriate R packages.
+
+Microbiome genome data will be recorded following the Data Standards of
+the National Microbiome Data Collaborative (ensuring that raw data
+files, primarily FASTQ and any BAM or SAM files, are used for file
+upload to Sequence Read Archive for long-term storage).
+
+Crystallographic metadata from glyphosate residue analysis will be
+recorded using the standards of PDBx/mmCIF (Protein Data Bank Exchange
+Dictionary and the Macromolecular Crystallographic Information
+Framework).
+
 ### Organization
-How will you make sure that documentation is created or captured consistently throughout your project?
+
+**How will you make sure that documentation is created or captured
+consistently throughout your project?**
+
+For each data collection group (small mammals, meso-carnivores, and
+ungulates), there will be a separate files in a shared cloud recording
+the methodologies and techniques of data collection throughout its
+lifetime, from pre-data collection, its potential evolution during field
+work, and then a cleaned and finalized form. The finalized form will
+follow manuscript format and will contain clear details about how
+protocols changed and why, keeping the research easily understandable
+and reproducible. This will allow all members of the team to be on the
+same page and will ensure accurate representation of the data and
+methodology for later publication and data sharing. Maintaining regular
+contact with all members of the team during data collection is an
+essential part of the integrity of data documentation.
+
+For relevant R files, the appropriate documentation will be included
+with a README file on Github and in a shared cloud.
 
 ## Storage and Backup
+
 ### Storage Space
-What are the anticipated storage requirements for your project, in terms of storage space (in megabytes, gigabytes, terabytes, etc.) and the length of time you will be storing it?
+
+**What are the anticipated storage requirements for your project, in
+terms of storage space (in megabytes, gigabytes, terabytes, etc.) and
+the length of time you will be storing it?**
+
+I will need approximately 10 gigabytes of storage capacity for all
+aspects of this data after the planned collection period. As this is not
+a growing data set at this point, the outlined storage locations will be
+sufficient to hold and store this data. We hope to store this data for
+its lifetime. For unpublished data, data can be stored on Zenodo or on
+the European Nucleotide Archive. Published data can be stored for
+long-term access on the NCBI database, Sequence Read Archive, or similar
+repository.
+
 ### Backups and Updates
-How and where will your data be stored and backed up during your research project?
+
+**How and where will your data be stored and backed up during your
+research project?**
+
+There will be several copies of this data, and it will be backed up
+every time there is an addition to the data set. Copies of the data will
+be stored in each of the following locations:
+
+A "working" copy on a laptop hard drive A copy on a University-owned
+cloud-based server An off-site external hard drive A shared private
+folder in Github
+
 ### Team Access Management
-How will the research team and other collaborators access, modify, and contribute data throughout the project?
 
-## Data Preservation 
+**How will the research team and other collaborators access, modify, and
+contribute data throughout the project?**
+
+Collaborators can access, modify, and contribute to data through a
+shared cloud-based system and through shared Github folders.
+
+## Data Preservation
+
 ### Preservation
-Where will you deposit your data for long-term preservation and access at the end of your research project?
-### File format
-Indicate how you will ensure your data is preservation ready. Consider preservation-friendly file formats, ensuring file integrity, anonymization and de-identification, inclusion of supporting documentation.
 
-## Sharing and Resuse
+**Where will you deposit your data for long-term preservation and access
+at the end of your research project?**
+
+The genomic data will have all versions preserved. Raw genomic data
+(FASTQ files) could be deposited in SRA (Sequence Read Archive), or the
+raw data and the full genome assemblies and bioinformatic reports could
+be deposited in Zenodo or NCBI. Ecological and crystallography data will
+be deposited in the same location.
+
+### File format
+
+**Indicate how you will ensure your data is preservation ready. Consider
+preservation-friendly file formats, ensuring file integrity,
+anonymization and de-identification, inclusion of supporting
+documentation.**
+
+All data will be preserved in non-proprietary formats to maximize
+accessibility and interoperabilty. Tabular data (most ecological data)
+will be preserved as comma separated values files (.csv) files. Any
+spatial data (such as those depicting GBH use in Canadian forests) will
+be preserved as georeferencing tagged image file format (.geotiff)
+files. Text data will be preserved as text (.txt) files. Genomic data
+will be maintained as FASTQ, FASTA, SFF, and other non-proprietary file
+formats that best preserve the genomic data for versatile use.
+
+## Sharing and Reuse
+
 ### Data Sharing
-What data will you be sharing and in what form? (e.g. raw, processed, analyzed, final)
+
+**What data will you be sharing and in what form? (e.g. raw, processed,
+analyzed, final)**
+
+I will be sharing biometric and ecological data, spatial data, molecular
+data, and genomic/metagenomic data.
+
+All data from this project will be shared in an open-access repository
+to maximize its potential beneficial impact. Raw, processed, analyzed,
+and final genomic, metagenomic, and crystallography data will be
+deposited, following disciplinary standards. For tabular and metadata,
+only processed, analyzed, and final data will be deposited.
+
 ### License
-Have you considered what type of end-user license to include with your data?
+
+**Have you considered what type of end-user license to include with your
+data?**
+
+I will use a CC-BY license to maximize availability and searchability of
+these data.
+
 ### Dissemination
-What steps will be taken to help the research community know that your data exists?
+
+**What steps will be taken to help the research community know that your
+data exists?**
+
+This data will be publicized to the research community through
+publications, articles, website updates (<https://www.growproject.ca/>),
+newsletters to subscribed partner organizations, and word of mouth.
 
 ## Responsibilities and Resources
+
 ### Responsibility of Contributors
-Identify who will be responsible for managing this project's data during and after the project and the major data management tasks for which they will be responsible.
+
+**Identify who will be responsible for managing this project's data
+during and after the project and the major data management tasks for
+which they will be responsible.**
+
+I will be responsible for the data during the project, and will share
+responsibility with Dr. Gibson and Dr. Grieneisen and UBCO after the
+project has been archived. I will be responsible for all parts of data
+creation, cleaning, and responsible archival.
+
 ### Unforseen changes
-How will responsibilities for managing data activities be handled if substantive changes happen in the personnel overseeing the project's data, including a change of Principal Investigator?
+
+**How will responsibilities for managing data activities be handled if
+substantive changes happen in the personnel overseeing the project's
+data, including a change of Principal Investigator?**
+
+I will maintain responsibility for the data until an appropriate
+substitute is found.
+
 ### Resources
-What resources will you require to implement your data management plan? What do you estimate the overall cost for data management to be?
+
+**What resources will you require to implement your data management
+plan? What do you estimate the overall cost for data management to be?**
+
+Access to UBCO and UNBC funds to pay for archival will be needed.
 
 ## Ethics and Legal Compliance
+
 ### Sensitive data
-If your research project includes sensitive data, how will you ensure that it is securely managed and accessible only to approved members of the project?
-If applicable, what strategies will you undertake to address secondary uses of sensitive data?
+
+**If your research project includes sensitive data, how will you ensure
+that it is securely managed and accessible only to approved members of
+the project? If applicable, what strategies will you undertake to
+address secondary uses of sensitive data?**
+
+The contact information for the community members (hunters and trappers)
+will be kept confidential and not publicly archived but protected by
+UNBC/UBCO for internal use only.
+
 ### Issues
-How will you manage legal, ethical, and intellectual property issues?
+
+**How will you manage legal, ethical, and intellectual property
+issues?**
+
+I will utilize the legal resources available through my institution.
