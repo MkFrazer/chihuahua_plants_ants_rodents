@@ -1,7 +1,6 @@
-#plot model prediction of precip on top of data
-
 library(here)
 library(dplyr)
+library(DHARMa)
 
 precip <- read.csv(here("data", "data_processed", "precip_clean.csv"))
 plants <- read.csv(here("data", "data_processed", "plants_clean.csv"))
@@ -39,17 +38,6 @@ model_complex <- glmmTMB(total_abundance ~ All_ants + All_rodents + Annual_preci
                          na.action = "na.fail", 
                          REML = FALSE)
 
-
-library(ggplot2)
-library(ggeffects)
-
-eff_precip <- ggpredict(model_complex, terms = "Annual_precip_s")
-
-  
-ggplot(data, aes(x = Annual_precip_s, y = total_abundance)) +
-  geom_point(data=data, aes(x = Annual_precip_s, y = total_abundance), alpha = 0.5, size = 1.5) +
-  geom_line(data = eff_precip, aes(x = x, y = predicted), color = "red", linewidth = 1) +
-  geom_ribbon(data = eff_precip, aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high), alpha = 0.2, color = NA) +
-  ggtitle("Predicted Plant Speces Abundance from Annual Precipitation") +
-  theme(plot.title = element_text(hjust = 0.5)) +
-  labs(x = "Total Annual Precipitation", y = "Total Species Abundance")
+#generate DHARMa residuals
+sim_complex <- simulateResiduals(model_complex)
+plot(sim_complex)

@@ -39,33 +39,37 @@ It was determined that the outliers did not affect the model.
 
 Here is a table of which plots had which treatment(s).
 
-Changes in treatment assignments to the 24 experimental plots through time. To help highlight which plots were modified, only changes in treatment after 1985 are recorded below. Blank cells denote no changes in treatment from the previous time period. Pogonomyrmex rugosus was a dominant granivorous ant species that declined at the site. Banner-tailed kangaroo rats (Dipodomys spectabilis) were a dominant rodent granivore that also declined during the 1980s. (Table modified from Brown 1998). \* plot 24 was not initiated until 1979 (Samson et al. 1992)
+Changes in treatment assignments to the 24 experimental plots through time. To help highlight which plots were modified, only changes in treatment after 1985 are recorded below. Blank cells denote no changes in treatment from the previous time period. *Pogonomyrmex rugosus* was a dominant granivorous ant species that declined at the site. Banner-tailed kangaroo rats (*Dipodomys spectabilis*) were a dominant rodent granivore that also declined during the 1980s. (Table modified from Brown 1998). \* plot 24 was not initiated until 1979 (Samson et al. 1992)
 
-```{R  fig.height = 8, fig.width = 8}
+```{R  fig.height = 8, fig.width = 8, echo = FALSE}
 library(knitr)
 plots_treatments <- read.csv("./../data/data_raw/Plot_treatments/plot_treatments.csv")
 kable(plots_treatments, align = "cccc", caption = "Plot Treatments")
 ```
 
-Here is a figure of how the model predicts total plant species abundance using the presence/absence of all ants.
+Here is a figure of how the model predicts total plant species abundance using the presence/absence of all ants as a predictor.
 
-```{R,  fig.height = 8, fig.width = 8, echo = FALSE}
+```{R,  fig.height = 8, fig.width = 8, echo = FALSE, fig.cap = "Total species abundance data with predicted change in abundance due to ant exclusion"}
+
+source("../scripts/figures/Predicted_Ants.R", local = knitr::knit_global())
+
+```
+
+Here is a figure of how the model predicts total plant species abundance using the total annual precipitation as a predictor.
+
+```{R  fig.height = 8, fig.width = 8, echo = FALSE, include = FALSE, fig.cap = "Total species abundance data with predicted change in abundance due to total annual precipitation"}
 
 source("../scripts/figures/Predicted_AnnualPrecip.R", local = knitr::knit_global())
 
 ```
 
-```{R  echo = FALSE}
-#this is code to compare the models when I get there
-AIC(model1, model2, model3)
-```
+This model still has strong variance in the residuals, as can be seen by the DHARMa package.
 
-```{R  fig.height = 8, fig.width = 8, echo = FALSE}
-#this is code to make the figure
-plot(model1, which = 3)
-```
+```{R  fig.height = 8, fig.width = 8, echo = FALSE, fig.cap = "DHARMa residuals"}
 
-The residuals clearly have heteroskodasticity.
+source("../scripts/figures/DHARMa_resids.R", local = knitr::knit_global())
+
+```
 
 In conditional model, the intercept and the presence or absence of all ants were significant predictors of total plant species abundance. The presence of ants negatively impacted total plant species abundance by -0.3170 (p = 0.00569). However, while the presence/absence of Rodents helped account for variance in th model (particularly its interaction with ants, p-value = 0.0904), it was not a significant predictor of plant species abundance (p-value = 0.29836) Annual precipitation (scaled) was not a significant predictor of plant species abundance (p-value = 0.19516).
 

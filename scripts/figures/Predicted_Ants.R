@@ -26,30 +26,15 @@ data$PORU_ants<- as.factor(data$PORU_ants)
 data$All_ants<- as.factor(data$All_ants)
 data$Plot <-as.factor(data$Plot)
 
-data$Annual_precip_s <- as.vector(scale(data$Annual_precip))
-
-
-#model
-library(glmmTMB)
-
-model_complex <- glmmTMB(total_abundance ~ All_ants + All_rodents + Annual_precip_s + (1|Year) + (1|Plot),
-                         data = data,
-                         family = nbinom2(link="log"),
-                         dispformula = ~ Annual_precip_s + All_ants * All_rodents,
-                         na.action = "na.fail", 
-                         REML = FALSE)
-
 
 library(ggplot2)
-library(ggeffects)
 
-eff_precip <- ggpredict(model_complex, terms = "Annual_precip_s")
+ggplot(data, aes(x = factor(All_ants), y = total_abundance)) +
+  ggtitle("Predicted Plant Spescies Abundance from Ant Exclusion") +
+  labs(x = "Presence/Absence of All Ants", y = "Total Species Abundance") +
+  geom_jitter(width = 0.1) + 
+  stat_summary(fun = mean, geom = "line", aes(group = 1), color = "red") + 
+  stat_summary(fun = mean, geom = "point", color = "red", size = 4) +
+  annotate("text", x = 1.5, y = 3500, label = "Slope = -0.3170", col = "red")
 
-  
-ggplot(data, aes(x = Annual_precip_s, y = total_abundance)) +
-  geom_point(data=data, aes(x = Annual_precip_s, y = total_abundance), alpha = 0.5, size = 1.5) +
-  geom_line(data = eff_precip, aes(x = x, y = predicted), color = "red", linewidth = 1) +
-  geom_ribbon(data = eff_precip, aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high), alpha = 0.2, color = NA) +
-  ggtitle("Predicted Plant Speces Abundance from Annual Precipitation") +
-  theme(plot.title = element_text(hjust = 0.5)) +
-  labs(x = "Total Annual Precipitation", y = "Total Species Abundance")
+

@@ -37,46 +37,6 @@
 }{% if KOMA class
   \KOMAoptions{parskip=half}}
 \makeatother
-\usepackage{color}
-\usepackage{fancyvrb}
-\newcommand{\VerbBar}{|}
-\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
-\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
-% Add ',fontsize=\small' for more characters per line
-\usepackage{framed}
-\definecolor{shadecolor}{RGB}{248,248,248}
-\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
-\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
-\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
-\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
-\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
-\newcommand{\BuiltInTok}[1]{#1}
-\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
-\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
-\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
-\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
-\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
-\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
-\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
-\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
-\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
-\newcommand{\ExtensionTok}[1]{#1}
-\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
-\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
-\newcommand{\ImportTok}[1]{#1}
-\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
-\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
-\newcommand{\NormalTok}[1]{#1}
-\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
-\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
-\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
-\newcommand{\RegionMarkerTok}[1]{#1}
-\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
-\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
-\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
-\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
-\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
-\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
 \usepackage{longtable,booktabs,array}
 \usepackage{calc} % for calculating minipage widths
 % Correct order of tables after \paragraph or \subparagraph
@@ -178,6 +138,55 @@ from 1977-2002 across 24 experimental exclusion plots.
 
 The data for this project is publicly available.
 
+For treatment data, a qualitative table of the treatments each plot
+received on which years can be found in the metadata for this
+\href{https://www.esapubs.org/archive/ecol/E090/118/metadata.htm}{data
+set}. This project includes a copy of that qualitative table in CSV form
+(plot\_treatments). It also includes a quantitative version, where each
+unique combination of plot and year has corresponding binary values
+representing the inclusion or exclusion of kangaroo rats (large
+rodents), all rodents, \emph{Pogonomyrmex rugosus} (a granivorous ant
+species), or all ants. 0 = excluded (not present), 1 = included
+(present). This table is what is used in the following analyses.
+
+While the longitudinal study went from 1977-2002, we only used data from
+1989--2002 because that is when plant species-level abundances were
+consistently recorded.
+
+Using the plant species data, although it was recorded for annuals and
+perennials both in winter and in summer, and were measured across
+quadrats within each plot, all species abundances were summed for each
+plot for each year. Similarly, precipitation data was summed for a total
+precipitation per year, the same for all plots of that year.
+
+I ran a model comparison to determine what model best represented the
+data. Negative binomial had an improved AICc score compared to Poisson,
+so that model structure was used for future models. When comparing all
+possible combinations of predictive factors (presence/absence of large
+rodents, presence/absence of all rodents, presence/absence of PORU ants,
+presence/absence of all ants, and precipitation), the top models
+contained either presence/absence of all ants or presence/absence of
+PORU ants and precipitation. Due to the more informative nature of
+presence/absence of all ants compared to just PORU ants, precipitation
+and the presence/absence of all ants were chosen as factors in the
+Negative Binomial model.
+
+For fixed effects, Year and Plot were added (crossed). It was determined
+that keeping Year in the model made a significant difference compared to
+just Precipitation, although there was some colinearity.
+
+DHARMa residuals were imperfect, so variance was added to the model
+(\textasciitilde{} Annual\_precip\_s + All\_ants * All\_rodents).
+Although the presence of rodents did not predict plant abundnace, it did
+help explain some of the variation in the data.
+
+Data were checked for temporal autocorrelation, which was not found.
+Spatial autocorrelation was predicted to explain the remaining variance
+in the data, but was not able to be accounted for due to lack of
+geographic coordinates and a precise map of the plot spacing.
+
+It was determined that the outliers did not affect the model.
+
 \subsection{Results}\label{results}
 
 Here is a table of which plots had which treatment(s).
@@ -185,26 +194,18 @@ Here is a table of which plots had which treatment(s).
 Changes in treatment assignments to the 24 experimental plots through
 time. To help highlight which plots were modified, only changes in
 treatment after 1985 are recorded below. Blank cells denote no changes
-in treatment from the previous time period. Pogonomyrmex rugosus was a
-dominant granivorous ant species that declined at the site.
-Banner-tailed kangaroo rats (Dipodomys spectabilis) were a dominant
-rodent granivore that also declined during the 1980s. (Table modified
-from Brown 1998). * plot 24 was not initiated until 1979 (Samson et
-al.~1992)
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\FunctionTok{library}\NormalTok{(knitr)}
-\NormalTok{plots\_treatments }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"./../data/data\_raw/raw\_data/plot\_treatments.csv"}\NormalTok{)}
-\FunctionTok{kable}\NormalTok{(plots\_treatments, }\AttributeTok{align =} \StringTok{"cccc"}\NormalTok{, }\AttributeTok{caption =} \StringTok{"Plot Treatments"}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
+in treatment from the previous time period. \emph{Pogonomyrmex rugosus}
+was a dominant granivorous ant species that declined at the site.
+Banner-tailed kangaroo rats (\emph{Dipodomys spectabilis}) were a
+dominant rodent granivore that also declined during the 1980s. (Table
+modified from Brown 1998). * plot 24 was not initiated until 1979
+(Samson et al.~1992)
 
 \begin{longtable}[]{@{}
-  >{\centering\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.0480}}
-  >{\centering\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.4080}}
-  >{\centering\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2320}}
-  >{\centering\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.3120}}@{}}
+  >{\centering\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.0400}}
+  >{\centering\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.3467}}
+  >{\centering\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.3467}}
+  >{\centering\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2667}}@{}}
 \caption{Plot Treatments}\tabularnewline
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\centering
@@ -236,83 +237,125 @@ X1988\_2002
 Banner-tailed kangaroo rat removed \\
 2 & Small seeds added & Summer annuals removed & Unmanipulated
 control \\
-3 & Kangaroo rats removed & & \\
-Pogonomyrmex rugosus~removed & & Kangaroo rats removed & \\
+3 & Kangaroo ratsremoved, & & \\
+Pogonomyrmex rugosus~removed & Kangaroo rats removed, & & \\
+Pogonomyrmex rugosus~removed & Kangaroo rats removed, & & \\
 All ants removed & & & \\
-4 & All ants removed & & \\
-5 & Banner-tailed kangaroo rats removed & & All rodents removed \\
+4 & All ants removed & All ants removed & All ants removed \\
+5 & Banner-tailed kangaroo rats removed & Banner-tailed kangaroo rats
+removed & All rodents removed \\
 6 & Large seeds added & Winter annuals removed & Kangaroo rats
 removed \\
-7 & All rodents removed & & \\
-8 & Pogonomyrmex rugosus~removed & & All ants removed \\
+7 & All rodents removed & All rodents removed & All rodents removed \\
+8 & Pogonomyrmex rugosus~removed & Pogonomyrmex rugosus~removed & All
+ants removed \\
 9 & Mixed-size seeds added & Bi-seasonal annuals removed & Banner-tailed
 kangaroo rats removed \\
-10 & All rodents removed & & \\
+10 & All rodents removed, & & \\
+All ants removed & All rodents removed, & & \\
+All ants removed & All rodents removed, & & \\
 All ants removed & & & \\
-11 & Unmanipulated control & & \\
-12 & Pogonomyrmex rugosus~removed & & All ants removed \\
+11 & Unmanipulated control & Unmanipulated control & Unmanipulated
+control \\
+12 & Pogonomyrmex rugosus~removed & Pogonomyrmex rugosus~removed & All
+ants removed \\
 13 & Large seeds added & Winter annuals removed & Kangaroo rats
-removed \\
+removed, \\
 All ants removed & & & \\
-& & & \\
-14 & Unmanipulated control & & \\
-15 & Kangaroo rats removed & & \\
-16 & All rodents removed & & \\
-17 & All ants removed & & \\
+14 & Unmanipulated control & Unmanipulated control & Unmanipulated
+control \\
+15 & Kangaroo rats removed & Kangaroo rats removed & Kangaroo rats
+removed \\
+16 & All rodents removed & All rodents removed & All rodents removed \\
+17 & All ants removed & All rodents removed & All rodents removed \\
 18 & Mixed-sized seeds added in pulse & All annuals removed & Kangaroo
 rats removed \\
-19 & Kangaroo rats removed & & \\
-Pogonomyrmex rugosus~removed & & Kangaroo rats removed & \\
+19 & Kangaroo rats removed, & & \\
+Pogonomyrmex rugosus~removed & Kangaroo rats removed, & & \\
+Pogonomyrmex rugosus~removed & Kangaroo rats removed, & & \\
 All ants removed & & & \\
 20 & Mixed-sized seeds added & Biseasonal annuals removed & Kangaroo
-rats removed \\
+rats removed, \\
 All ants removed & & & \\
-21 & Kangaroo rats removed & & \\
+21 & Kangaroo rats removed & Kangaroo rats removed & Kangaroo rats
+removed \\
 22 & Small seeds added & Summer annuals removed & Unmanipulated
 control \\
-23 & All rodents removed & & \\
-& & & \\
-& All ants removed & & \\
-24* & Banner-tailed kangaroo rats removed & & All rodents removed \\
+23 & All rodents removed, & & \\
+All ants removed & All rodents removed, & & \\
+All ants removed & All rodents removed, & & \\
+All ants removed & & & \\
+24 & Banner-tailed kangaroo rats removed & Banner-tailed kangaroo rats
+removed & All rodents removed \\
 \end{longtable}
 
-Here is a figure of the linear mixed effects model and how it predicts
-the data.
+Here is a figure of how the model predicts total plant species abundance
+using the presence/absence of all ants as a predictor.
+
+\begin{verbatim}
+## here() starts at C:/Users/madel/Downloads/Mini-Project
+\end{verbatim}
 
 \begin{verbatim}
 ## 
-## Attaching package: 'palmerpenguins'
+## Attaching package: 'dplyr'
 \end{verbatim}
 
 \begin{verbatim}
-## The following objects are masked from 'package:datasets':
+## The following objects are masked from 'package:stats':
 ## 
-##     penguins, penguins_raw
+##     filter, lag
 \end{verbatim}
 
 \begin{verbatim}
-## Loading required package: Matrix
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
 \end{verbatim}
+
+Here is a figure of how the model predicts total plant species abundance
+using the total annual precipitation as a predictor.
+
+This model still has strong variance in the residuals, as can be seen by
+the DHARMa package.
 
 \begin{verbatim}
-## Warning in AIC.default(model1, model2, model3): models are not all fitted to
-## the same number of observations
+## This is DHARMa 0.4.7. For overview type '?DHARMa'. For recent changes, type news(package = 'DHARMa')
 \end{verbatim}
 
-\begin{verbatim}
-##        df      AIC
-## model1  7 2036.988
-## model2  6 2075.048
-## model3  5 2242.698
-\end{verbatim}
-
+\begin{figure}
+\centering
 \pandocbounded{\includegraphics[keepaspectratio]{Manuscript_files/figure-latex/unnamed-chunk-4-1.pdf}}
+\caption{DHARMa residuals}
+\end{figure}
 
-The residuals clearly have heteroskodasticity.
+In conditional model, the intercept and the presence or absence of all
+ants were significant predictors of total plant species abundance. The
+presence of ants negatively impacted total plant species abundance by
+-0.3170 (p = 0.00569). However, while the presence/absence of Rodents
+helped account for variance in th model (particularly its interaction
+with ants, p-value = 0.0904), it was not a significant predictor of
+plant species abundance (p-value = 0.29836) Annual precipitation
+(scaled) was not a significant predictor of plant species abundance
+(p-value = 0.19516).
+
+In dispersion model, annual precipitation (scaled) significantly
+affected the dispersion of the model (p = 1.30e-07).
 
 \subsection{Discussion}\label{discussion}
 
+The presence or absence of ants on a plot was the strongest predictor of
+total plant species abundance, controlling for year and plot. The
+presence of ants negatively affected plant species abundance, much more
+significantly than the presence of rodents on the plot, although there
+is likely an interactive effect. Annual precipitation explained the
+variance of total plant species abundance from the predicted model, but
+was not itself a significant predictor of total plant species abundance.
+
 \subsection{Conclusion}\label{conclusion}
+
+Ants are a significant predator of plants and should be considered in
+conservation and management plans.
 
 \subsection*{Bibliography}\label{bibliography}
 \addcontentsline{toc}{subsection}{Bibliography}
